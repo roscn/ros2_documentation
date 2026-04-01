@@ -7,59 +7,59 @@
 Recording and playing back data
 ===============================
 
-**Goal:** Record data published on a topic, a service and an action so you can replay and examine it any time.
+**目标：** 记录主题、服务和动作上发布的数据，以便您可以随时重放和检查。
 
-**Tutorial level:** Beginner
+**教程级别：** 初级
 
-**Time:** 20 minutes
+**时间：** 20 分钟
 
-.. contents:: Contents
+.. contents:: 目录
    :depth: 2
    :local:
 
-Background
-----------
+背景
+----
 
-``ros2 bag`` is a command line tool for recording data published on topics, services and actions in your ROS 2 system.
-It accumulates the data passed on any number of topics, services and actions, then saves it in a database.
-You can then replay the data to reproduce the results of your tests and experiments.
-Recording topics, services and actions is also a great way to share your work and allow others to recreate it.
-
-
-Prerequisites
--------------
-
-You should have ``ros2 bag`` installed as a part of your regular ROS 2 setup.
-
-If you need to install ROS 2, see the :doc:`Installation instructions <../../../Installation>`.
-
-This tutorial talks about concepts covered in previous tutorials, like :doc:`nodes <../Understanding-ROS2-Nodes/Understanding-ROS2-Nodes>`, :doc:`topics <../Understanding-ROS2-Topics/Understanding-ROS2-Topics>`, :doc:`services <../Understanding-ROS2-Services/Understanding-ROS2-Services>` and :doc:`actions <../Understanding-ROS2-Actions/Understanding-ROS2-Actions>`.
-It also uses the :doc:`turtlesim package <../Introducing-Turtlesim/Introducing-Turtlesim>`, :doc:`Service Introspection Demo <../../Demos/Service-Introspection>` and :doc:`Action Introspection Demo <../../Demos/Action-Introspection>`.
-
-As always, don't forget to source ROS 2 in :doc:`every new terminal you open <../Configuring-ROS2-Environment>`.
+``ros2 bag`` 是一个命令行工具，用于记录 ROS 2 系统中主题、服务和动作上发布的数据。
+它累积在任意数量的主题、服务和动作上传递的数据，然后将其保存到数据库中。
+然后您可以重放数据以重现测试和实验的结果。
+记录主题、服务和动作也是分享您的工作并允许他人重现的好方法。
 
 
-Managing Topic Data
--------------------
+前提条件
+--------
 
-1 Setup
-^^^^^^^
+您应该在常规 ROS 2 设置中安装了 ``ros2 bag``。
 
-You'll be recording your keyboard input in the ``turtlesim`` system to save and replay later on, so begin by starting up the ``/turtlesim`` and ``/teleop_turtle`` nodes.
+如果您需要安装 ROS 2，请参阅 :doc:`安装说明 <../../../Installation>`。
 
-Open a new terminal and run:
+本教程讨论了之前教程中涵盖的概念，如 :doc:`节点 <../Understanding-ROS2-Nodes/Understanding-ROS2-Nodes>`、:doc:`主题 <../Understanding-ROS2-Topics/Understanding-ROS2-Topics>`、:doc:`服务 <../Understanding-ROS2-Services/Understanding-ROS2-Services>` 和 :doc:`动作 <../Understanding-ROS2-Actions/Understanding-ROS2-Actions>`。
+它还使用 :doc:`turtlesim 包 <../Introducing-Turtlesim/Introducing-Turtlesim>`、:doc:`服务内省演示 <../../Demos/Service-Introspection>` 和 :doc:`动作内省演示 <../../Demos/Action-Introspection>`。
+
+一如既往，不要忘记在 :doc:`您打开的每个新终端 <../Configuring-ROS2-Environment>` 中 source ROS 2。
+
+
+管理主题数据
+------------
+
+1 设置
+^^^^^^
+
+您将在 ``turtlesim`` 系统中记录键盘输入以便稍后保存和重放，因此首先启动 ``/turtlesim`` 和 ``/teleop_turtle`` 节点。
+
+打开一个新终端并运行：
 
 .. code-block:: console
 
     $ ros2 run turtlesim turtlesim_node
 
-Open another terminal and run:
+打开另一个终端并运行：
 
 .. code-block:: console
 
     $ ros2 run turtlesim turtle_teleop_key
 
-Let's also make a new directory to store our saved recordings, just as good practice:
+让我们也创建一个新目录来存储保存的记录，这是一个好习惯：
 
 .. tabs::
 
@@ -85,11 +85,11 @@ Let's also make a new directory to store our saved recordings, just as good prac
             $ cd bag_files
 
 
-2 Choose a topic
-^^^^^^^^^^^^^^^^
+2 选择主题
+^^^^^^^^^^
 
-``ros2 bag`` can record data from messages published to topics.
-To see the list of your system's topics, open a new terminal and run the command:
+``ros2 bag`` 可以记录发布到主题的消息数据。
+要查看系统主题列表，打开一个新终端并运行命令：
 
 .. code-block:: console
 
@@ -100,17 +100,17 @@ To see the list of your system's topics, open a new terminal and run the command
   /turtle1/color_sensor
   /turtle1/pose
 
-In the topics tutorial, you learned that the ``/turtle_teleop`` node publishes commands on the ``/turtle1/cmd_vel`` topic to make the turtle move in turtlesim.
+在主题教程中，您了解到 ``/turtle_teleop`` 节点在 ``/turtle1/cmd_vel`` 主题上发布命令，使 turtlesim 中的海龟移动。
 
-To see the data that ``/turtle1/cmd_vel`` is publishing, run the command:
+要查看 ``/turtle1/cmd_vel`` 发布的数据，运行命令：
 
 .. code-block:: console
 
     $ ros2 topic echo /turtle1/cmd_vel
 
-Nothing will show up at first because no data is being published by the teleop.
-Return to the terminal where you ran the teleop and select it so it's active.
-Use the arrow keys to move the turtle around, and you will see data being published on the terminal running ``ros2 topic echo``.
+起初不会显示任何内容，因为 teleop 没有发布数据。
+返回运行 teleop 的终端并选择它使其处于活动状态。
+使用箭头键移动海龟，您将在运行 ``ros2 topic echo`` 的终端上看到正在发布的数据。
 
 .. code-block:: console
 
@@ -125,21 +125,21 @@ Use the arrow keys to move the turtle around, and you will see data being publis
     ---
 
 
-3 Record topics
-^^^^^^^^^^^^^^^
+3 记录主题
+^^^^^^^^^^
 
-3.1 Record a single topic
-~~~~~~~~~~~~~~~~~~~~~~~~~
+3.1 记录单个主题
+~~~~~~~~~~~~~~~~
 
-To record the data published to a topic use the command syntax:
+要记录发布到主题的数据，使用命令语法：
 
 .. code-block:: console
 
     $ ros2 bag record --topics <topic_name>
 
-Before running this command on your chosen topic, open a new terminal and move into the ``bag_files`` directory you created earlier, because the rosbag file will save in the directory where you run it.
+在您选择的主题上运行此命令之前，打开一个新终端并移动到您之前创建的 ``bag_files`` 目录，因为 rosbag 文件将保存在您运行它的目录中。
 
-Run the command:
+运行命令：
 
 .. code-block:: console
 
@@ -149,21 +149,21 @@ Run the command:
     [INFO] [rosbag2_transport]: Subscribed to topic '/turtle1/cmd_vel'
     [INFO] [rosbag2_transport]: All requested topics are subscribed. Stopping discovery...
 
-Now ``ros2 bag`` is recording the data published on the ``/turtle1/cmd_vel`` topic.
-Return to the teleop terminal and move the turtle around again.
-The movements don't matter, but try to make a recognizable pattern to see when you replay the data later.
+现在 ``ros2 bag`` 正在记录 ``/turtle1/cmd_vel`` 主题上发布的数据。
+返回 teleop 终端并再次移动海龟。
+移动并不重要，但尝试做一个可识别的模式，以便稍后重放数据时查看。
 
 .. image:: images/record.png
 
-Press :kbd:`Ctrl-C` to stop recording.
+按 :kbd:`Ctrl-C` 停止记录。
 
-The data will be accumulated in a new bag directory with a name in the pattern of ``rosbag2_year_month_day-hour_minute_second``.
-This directory will contain a ``metadata.yaml`` along with the bag file in the recorded format.
+数据将累积到一个新的 bag 目录中，名称格式为 ``rosbag2_year_month_day-hour_minute_second``。
+此目录将包含 ``metadata.yaml`` 以及录制格式的 bag 文件。
 
-3.2 Record multiple topics
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+3.2 记录多个主题
+~~~~~~~~~~~~~~~~
 
-You can also record multiple topics, as well as change the name of the bag directory ``ros2 bag`` saves to.
+您还可以记录多个主题，以及更改 ``ros2 bag`` 保存的 bag 目录名称。
 
 Run the following command:
 
@@ -176,26 +176,26 @@ Run the following command:
   [INFO] [rosbag2_transport]: Subscribed to topic '/turtle1/pose'
   [INFO] [rosbag2_transport]: All requested topics are subscribed. Stopping discovery...
 
-The ``-o`` option allows you to choose a unique name for your bag directory.
-The following string, in this case ``subset``, is the bag directory name.
+``-o`` 选项允许您为 bag 目录选择一个唯一的名称。
+后面的字符串，在本例中是 ``subset``，是 bag 目录名称。
 
-To record more than one topic at a time, simply list each topic separated by a space after ``--topics``.
-In this case, the command output above confirms that both topics are being recorded.
+要一次记录多个主题，只需在 ``--topics`` 后列出每个主题，用空格分隔。
+在这种情况下，上面的命令输出确认正在记录两个主题。
 
-You can move the turtle around and press :kbd:`Ctrl-C` when you're finished.
+您可以移动海龟，完成后按 :kbd:`Ctrl-C`。
 
 .. note::
 
-    There is another option you can add to the command, ``-a``, which records all the topics on your system.
+    您可以在命令中添加另一个选项 ``-a``，它会记录系统上的所有主题。
 
-3.3 Split recording into multiple files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3.3 将录制拆分为多个文件
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can also split your recording into multiple files, based on either recording duration or file size.
-``-d <max_bag_duration>`` ensures that each file only lasts ``<max_bag_duration>`` seconds before it starts writing to a new file, or ``-b <max_bag_size>`` ensures that each file does not exceed ``<max_bag_size>`` bytes in file size.
-This prevents large and unwieldy file sizes, and protects against losing all data if the recording operation becomes corrupted at some point.
+您还可以根据录制持续时间或文件大小将录制拆分为多个文件。
+``-d <max_bag_duration>`` 确保每个文件在开始写入新文件之前只持续 ``<max_bag_duration>`` 秒，或者 ``-b <max_bag_size>`` 确保每个文件的文件大小不超过 ``<max_bag_size>`` 字节。
+这可以防止文件过大和笨重，并防止在录制操作在某个时刻损坏时丢失所有数据。
 
-Run the following for at least 15 seconds, allowing for three 5-second bag files to be written:
+运行以下命令至少 15 秒，允许写入三个 5 秒的 bag 文件：
 
 .. code-block:: console
 
@@ -211,19 +211,19 @@ Run the following for at least 15 seconds, allowing for three 5-second bag files
     [INFO] [rosbag2_cpp]: Writing remaining messages from cache to the bag. It may take a while
     [INFO] [rosbag2_cpp]: Writing remaining messages from cache to the bag. It may take a while
 
-Press :kbd:`Ctrl-C` when you're finished.
-You should find a ``subset_split`` directory with these files inside: ``subset_split_0.mcap``, ``subset_split_1.mcap``, and so on.
+完成后按 :kbd:`Ctrl-C`。
+您应该找到一个 ``subset_split`` 目录，其中包含这些文件：``subset_split_0.mcap``、``subset_split_1.mcap`` 等等。
 
-4 Inspect topic data
-^^^^^^^^^^^^^^^^^^^^
+4 检查主题数据
+^^^^^^^^^^^^^^
 
-You can see details about your recording by running:
+您可以通过运行以下命令查看有关录制的详细信息：
 
 .. code-block:: console
 
     $ ros2 bag info <bag_name>
 
-Running this command on the ``subset`` bag recording will return a list of information:
+在 ``subset`` bag 录制上运行此命令将返回信息列表：
 
 .. code-block:: console
 
@@ -242,18 +242,18 @@ Running this command on the ``subset`` bag recording will return a list of infor
     Actions:           0
     Action information:
 
-Alternatively, you can also call ``ros2 bag info`` on an individual file, such as ``subset_split/subset_split_0.mcap``, and it will only show information for that portion of the recording; in this case, the first 5 seconds.
+或者，您也可以对单个文件调用 ``ros2 bag info``，例如 ``subset_split/subset_split_0.mcap``，它只会显示该部分录制的信息；在这种情况下，是前 5 秒。
 
-5 Play topic data
-^^^^^^^^^^^^^^^^^
+5 播放主题数据
+^^^^^^^^^^^^^^
 
-5.1 Play a single bag
-~~~~~~~~~~~~~~~~~~~~~
+5.1 播放单个 bag
+~~~~~~~~~~~~~~~~
 
-Before replaying the bag, enter :kbd:`Ctrl-C` in the terminal where the teleop is running.
-Then make sure your turtlesim window is visible so you can see the bag file in action.
+在重放 bag 之前，在运行 teleop 的终端中输入 :kbd:`Ctrl-C`。
+然后确保您的 turtlesim 窗口可见，以便您可以看到 bag 文件的运行情况。
 
-Enter the command:
+输入命令：
 
 .. code-block:: console
 
@@ -272,84 +272,84 @@ Enter the command:
     ====== Playback Progress ======
     [1751923361.427372456] Duration 0.00/48.47 [R]
 
-Your turtle will follow the same path you entered while recording (though not 100% exactly; turtlesim is sensitive to small changes in the system's timing).
+您的海龟将遵循您在录制时输入的相同路径（虽然不是 100% 准确；turtlesim 对系统时间的微小变化很敏感）。
 
 .. image:: images/playback.png
 
-Because the ``subset`` file recorded the ``/turtle1/pose`` topic, the ``ros2 bag play`` command won't quit for as long as you had turtlesim running, even if you weren't moving.
+因为 ``subset`` 文件记录了 ``/turtle1/pose`` 主题，所以 ``ros2 bag play`` 命令不会在您运行 turtlesim 时退出，即使您没有移动。
 
-This is because as long as the ``/turtlesim`` node is active, it publishes data on the  ``/turtle1/pose`` topic at regular intervals.
-You may have noticed in the ``ros2 bag info`` example result above that the  ``/turtle1/cmd_vel`` topic's ``Count`` information was only 9; that's how many times we pressed the arrow keys while recording.
+这是因为只要 ``/turtlesim`` 节点处于活动状态，它就会定期在 ``/turtle1/pose`` 主题上发布数据。
+您可能在上面的 ``ros2 bag info`` 示例结果中注意到，``/turtle1/cmd_vel`` 主题的 ``Count`` 信息只有 9；这是我们在录制时按箭头键的次数。
 
-Notice that ``/turtle1/pose`` has a ``Count`` value of over 3000; while we were recording, data was published on that topic 3000 times.
+请注意，``/turtle1/pose`` 的 ``Count`` 值超过 3000；在录制时，该主题上发布了 3000 次数据。
 
-To get an idea of how often position data is published, you can run the command:
+要了解位置数据发布的频率，您可以运行命令：
 
 .. code-block:: console
 
     $ ros2 topic hz /turtle1/pose
 
-5.2 Play multiple bags
-~~~~~~~~~~~~~~~~~~~~~~
+5.2 播放多个 bag
+~~~~~~~~~~~~~~~~~
 
-At times, it is relevant to split the desired recorded topics amongst multiple recordings, as a way to distribute the recording workload.
-As an example, we can record ``/turtle1/cmd_vel`` and ``/turtle1/pose`` each to their own bag.
+有时，将所需的录制主题分配到多个录制中是相关的，作为分配录制工作负载的一种方式。
+例如，我们可以将 ``/turtle1/cmd_vel`` 和 ``/turtle1/pose`` 分别录制到各自的 bag 中。
 
-Create two terminal instances.
-In the first one, run the following:
+创建两个终端实例。
+在第一个中，运行以下命令：
 
 .. code-block:: console
 
     $ ros2 bag record -o subset_cmd_vel --topics /turtle1/cmd_vel
 
-In the second terminal, run this:
+在第二个终端中，运行此命令：
 
 .. code-block:: console
 
     $ ros2 bag record -o subset_pose --topics /turtle1/pose
 
-Move the turtle around as you did before, then end both recordings with :kbd:`Ctrl-C` when finished.
+像之前一样移动海龟，完成后用 :kbd:`Ctrl-C` 结束两个录制。
 
-To have these two recordings play in parallel with correct timing, call ``ros2 bag play`` with ``-i <bag_name>`` for each bag you want to include.
-In this case, run:
+要让这两个录制以正确的时间并行播放，请为要包含的每个 bag 调用带有 ``-i <bag_name>`` 的 ``ros2 bag play``。
+在这种情况下，运行：
 
 .. code-block:: console
 
     $ ros2 bag play -i subset_cmd_vel -i subset_pose
 
-This will play the ``subset_cmd_vel`` and ``subset_pose`` recordings together, with the playback synced to replicate the original order of messages.
-If used, the optional argument ``--message-order {received,sent}`` determines whether the messages are sequenced according to the time they were received or published (defaults to received).
-This applies to playing a single bag as well.
+这将一起播放 ``subset_cmd_vel`` 和 ``subset_pose`` 录制，播放同步以重现消息的原始顺序。
+如果使用，可选参数 ``--message-order {received,sent}`` 决定消息是根据接收还是发布的时间排序（默认为接收）。
+这也适用于播放单个 bag。
 
-Managing Service Data
----------------------
+管理服务数据
+------------
 
-1 Setup
-^^^^^^^
+1 设置
+^^^^^^
 
-You'll be recording service data between ``introspection_client`` and ``introspection_service``, then display and replay that same data later on.
-To record service data between service client and server, ``Service Introspection`` must be enabled on the node.
+您将记录 ``introspection_client`` 和 ``introspection_service`` 之间的服务数据，然后稍后显示和重放相同的数据。
+要记录服务客户端和服务器之间的服务数据，必须在节点上启用 ``Service Introspection``。
 
-Let's start ``introspection_client`` and ``introspection_service`` nodes and enable ``Service Introspection``.
-You can see more details for :doc:`Service Introspection Demo <../../Demos/Service-Introspection>`.
+让我们启动 ``introspection_client`` 和 ``introspection_service`` 节点并启用 ``Service Introspection``。
+您可以在 :doc:`服务内省演示 <../../Demos/Service-Introspection>` 中查看更多详细信息。
 
-Open a new terminal and run ``introspection_service``, enabling ``Service Introspection``:
+打开一个新终端并运行 ``introspection_service``，启用 ``Service Introspection``：
 
 .. code-block:: console
 
     $ ros2 run demo_nodes_cpp introspection_service --ros-args -p service_configure_introspection:=contents
 
-Open another terminal and run ``introspection_client``, enabling ``Service Introspection``:
+打开另一个终端并运行 ``introspection_client``，启用 ``Service Introspection``：
 
 .. code-block:: console
 
     $ ros2 run demo_nodes_cpp introspection_client --ros-args -p client_configure_introspection:=contents
 
-2 Check service availability
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2 检查服务可用性
+^^^^^^^^^^^^^^^^
 
-``ros2 bag`` can only record data from available services.
-To see the list of your system's services, open a new terminal and run the command:
+``ros2 bag`` 只能记录可用服务的数据。
+要查看系统服务列表，打开一个新终端并运行命令：
 
 .. code-block:: console
 
@@ -370,7 +370,7 @@ To see the list of your system's services, open a new terminal and run the comma
   /introspection_service/set_parameters
   /introspection_service/set_parameters_atomically
 
-To check if ``Service Introspection`` is enabled on the client and service, run the command:
+要检查客户端和服务上是否启用了 ``Service Introspection``，运行命令：
 
 .. code-block:: console
 
@@ -386,27 +386,27 @@ To check if ``Service Introspection`` is enabled on the client and service, run 
   response: []
   ---
 
-You should see the service communication.
+您应该看到服务通信。
 
-3 Record services
-^^^^^^^^^^^^^^^^^
+3 记录服务
+^^^^^^^^^^
 
-To record service data, the following options are supported.
-Service data can be recorded with topics at the same time.
+要记录服务数据，支持以下选项。
+服务数据可以与主题同时记录。
 
-To record specific services:
+要记录特定服务：
 
 .. code-block:: console
 
   $ ros2 bag record --service <service_names>
 
-To record all services:
+要记录所有服务：
 
 .. code-block:: console
 
   $ ros2 bag record --all-services
 
-Run the command:
+运行命令：
 
 .. code-block:: console
 
@@ -417,16 +417,16 @@ Run the command:
   [INFO] [1713995957.666048323] [rosbag2_recorder]: Subscribed to topic '/add_two_ints/_service_event'
   [INFO] [1713995957.666092458] [rosbag2_recorder]: Recording...
 
-Now ``ros2 bag`` is recording the service data published on the ``/add_two_ints`` service.
-To stop the recording, enter :kbd:`Ctrl-C` in the terminal.
+现在 ``ros2 bag`` 正在记录 ``/add_two_ints`` 服务上发布的服务数据。
+要停止录制，在终端中输入 :kbd:`Ctrl-C`。
 
-The data will be accumulated in a new bag directory with a name in the pattern of ``rosbag2_year_month_day-hour_minute_second``.
-This directory will contain a ``metadata.yaml`` along with the bag file in the recorded format.
+数据将累积到一个新的 bag 目录中，名称格式为 ``rosbag2_year_month_day-hour_minute_second``。
+此目录将包含 ``metadata.yaml`` 以及录制格式的 bag 文件。
 
-4 Inspect service data
-^^^^^^^^^^^^^^^^^^^^^^
+4 检查服务数据
+^^^^^^^^^^^^^^
 
-You can see details about your recording by running:
+您可以通过运行以下命令查看有关录制的详细信息：
 
 .. code-block:: console
 
@@ -443,15 +443,15 @@ You can see details about your recording by running:
   Service:           1
   Service information: Service: /add_two_ints | Type: example_interfaces/srv/AddTwoInts | Event Count: 78 | Serialization Format: cdr
 
-5 Play service data
-^^^^^^^^^^^^^^^^^^^
+5 播放服务数据
+^^^^^^^^^^^^^^
 
-Before replaying the bag file, enter :kbd:`Ctrl-C` in the terminal where ``introspection_client`` is running.
-When ``introspection_client`` stops running, ``introspection_service`` also stops printing the result because there are no incoming requests.
+在重放 bag 文件之前，在运行 ``introspection_client`` 的终端中输入 :kbd:`Ctrl-C`。
+当 ``introspection_client`` 停止运行时，``introspection_service`` 也会停止打印结果，因为没有传入的请求。
 
-Replaying the service data from the bag file will start sending the requests to ``introspection_service``.
+从 bag 文件重放服务数据将开始向 ``introspection_service`` 发送请求。
 
-Enter the command:
+输入命令：
 
 .. code-block:: console
 
@@ -464,24 +464,24 @@ Enter the command:
   [INFO] [1713997477.877456954] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
   [INFO] [1713997477.877573647] [rosbag2_player]: Playback until timestamp: -1
 
-Your ``introspection_service`` terminal will once again start printing the following service messages:
+您的 ``introspection_service`` 终端将再次开始打印以下服务消息：
 
 .. code-block:: console
 
   [INFO] [1713997478.090466075] [introspection_service]: Incoming request
   a: 2 b: 3
 
-This is because ``ros2 bag play`` sends the service request data from the bag file to the ``/add_two_ints`` service.
+这是因为 ``ros2 bag play`` 将 bag 文件中的服务请求数据发送到 ``/add_two_ints`` 服务。
 
-We can also introspect service communication as ``ros2 bag play`` is playing it back to verify the ``introspection_service``.
+我们还可以在 ``ros2 bag play`` 播放时内省服务通信以验证 ``introspection_service``。
 
-Run this command before ``ros2 bag play`` to see the ``introspection_service``:
+在 ``ros2 bag play`` 之前运行此命令以查看 ``introspection_service``：
 
 .. code-block:: console
 
   $ ros2 service echo --flow-style /add_two_ints
 
-You can see the service request from the bag file and the service response from  ``introspection_service``.
+您可以看到来自 bag 文件的服务请求和来自 ``introspection_service`` 的服务响应。
 
 .. code-block:: console
 
@@ -507,42 +507,42 @@ You can see the service request from the bag file and the service response from 
 
 .. _record-play-data-action:
 
-Managing Action Data
---------------------
+管理动作数据
+------------
 
-1 Setup
-^^^^^^^
+1 设置
+^^^^^^
 
-You'll be recording action data between ``fibonacci_action_client`` and ``fibonacci_action_server``, then display and replay that same data later on.
-To record action data between action client and server, ``Action Introspection`` must be enabled on the nodes.
+您将记录 ``fibonacci_action_client`` 和 ``fibonacci_action_server`` 之间的动作数据，然后稍后显示和重放相同的数据。
+要记录动作客户端和服务器之间的动作数据，必须在节点上启用 ``Action Introspection``。
 
-Let's start ``fibonacci_action_client`` and ``fibonacci_action_server`` nodes and enable ``Action Introspection``.
-You can see more details for :doc:`Action Introspection Demo <../../Demos/Action-Introspection>`.
+让我们启动 ``fibonacci_action_client`` 和 ``fibonacci_action_server`` 节点并启用 ``Action Introspection``。
+您可以在 :doc:`动作内省演示 <../../Demos/Action-Introspection>` 中查看更多详细信息。
 
-Open a new terminal and run ``fibonacci_action_server``, enabling ``Action Introspection``:
+打开一个新终端并运行 ``fibonacci_action_server``，启用 ``Action Introspection``：
 
 .. code-block:: console
 
   $ ros2 run action_tutorials_py fibonacci_action_server --ros-args -p action_server_configure_introspection:=contents
 
-Open another terminal and run ``fibonacci_action_client``, enabling ``Action Introspection``:
+打开另一个终端并运行 ``fibonacci_action_client``，启用 ``Action Introspection``：
 
 .. code-block:: console
 
   $ ros2 run action_tutorials_cpp fibonacci_action_client --ros-args -p action_client_configure_introspection:=contents
 
-2 Check action availability
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2 检查动作可用性
+^^^^^^^^^^^^^^^^
 
-``ros2 bag`` can only record data from available actions.
-To see the list of your system's actions, open a new terminal and run the command:
+``ros2 bag`` 只能记录可用动作的数据。
+要查看系统动作列表，打开一个新终端并运行命令：
 
 .. code-block:: console
 
   $ ros2 action list
   /fibonacci
 
-To check if ``Action Introspection`` is enabled on the action, run the command:
+要检查动作上是否启用了 ``Action Introspection``，运行命令：
 
 .. code-block:: console
 
@@ -560,25 +560,25 @@ To check if ``Action Introspection`` is enabled on the action, run the command:
   ---
   ...
 
-3 Record actions
-^^^^^^^^^^^^^^^^
+3 记录动作
+^^^^^^^^^^
 
-To record action data, the following options are supported.
-Action data can be recorded with topics and services at the same time.
+要记录动作数据，支持以下选项。
+动作数据可以与主题和服务同时记录。
 
-To record specific actions:
+要记录特定动作：
 
 .. code-block:: console
 
   $ ros2 bag record --action <action_names>
 
-To record all actions:
+要记录所有动作：
 
 .. code-block:: console
 
   $ ros2 bag record --all-actions
 
-Run the command:
+运行命令：
 
 .. code-block:: console
 
@@ -594,16 +594,16 @@ Run the command:
   [INFO] [1744953225.735061252] [rosbag2_recorder]: Subscribed to topic '/fibonacci/_action/status'
   ...
 
-Now ``ros2 bag`` is recording the action data for the ``/fibonacci`` action: goal, result, and feedback.
-To stop the recording, enter :kbd:`Ctrl-C` in the terminal.
+现在 ``ros2 bag`` 正在记录 ``/fibonacci`` 动作的动作数据：目标、结果和反馈。
+要停止录制，在终端中输入 :kbd:`Ctrl-C`。
 
-The data will be accumulated in a new bag directory with a name in the pattern of ``rosbag2_year_month_day-hour_minute_second``.
-This directory will contain a ``metadata.yaml`` along with the bag file in the recorded format.
+数据将累积到一个新的 bag 目录中，名称格式为 ``rosbag2_year_month_day-hour_minute_second``。
+此目录将包含 ``metadata.yaml`` 以及录制格式的 bag 文件。
 
-4 Inspect action data
-^^^^^^^^^^^^^^^^^^^^^
+4 检查动作数据
+^^^^^^^^^^^^^^
 
-You can see details about your recording by running:
+您可以通过运行以下命令查看有关录制的详细信息：
 
 .. code-block:: console
 
@@ -628,15 +628,15 @@ You can see details about your recording by running:
       Service: cancel_goal | Event Count: 0
       Service: get_result | Event Count: 4
 
-5 Play action data
-^^^^^^^^^^^^^^^^^^
+5 播放动作数据
+^^^^^^^^^^^^^^
 
-Before replaying the bag file, enter :kbd:`Ctrl-C` in the terminal where ``fibonacci_action_client`` is running.
-When ``fibonacci_action_client`` stops running, ``fibonacci_action_server`` also stops printing the result because there are no incoming requests.
+在重放 bag 文件之前，在运行 ``fibonacci_action_client`` 的终端中输入 :kbd:`Ctrl-C`。
+当 ``fibonacci_action_client`` 停止运行时，``fibonacci_action_server`` 也会停止打印结果，因为没有传入的请求。
 
-Replaying the action data from the bag file will start sending the requests to ``fibonacci_action_server``.
+从 bag 文件重放动作数据将开始向 ``fibonacci_action_server`` 发送请求。
 
-Enter the command:
+输入命令：
 
 .. code-block:: console
 
@@ -655,7 +655,7 @@ Enter the command:
   ====== Playback Progress ======
   [1744953656.281683207] Duration 9.02/9.02 [R]
 
-Your ``fibonacci_action_server`` terminal will once again start printing the following service messages:
+您的 ``fibonacci_action_server`` 终端将再次开始打印以下服务消息：
 
 .. code-block:: console
 
@@ -670,12 +670,12 @@ Your ``fibonacci_action_server`` terminal will once again start printing the fol
   [INFO] [1744953727.820738690] [fibonacci_action_server]: Feedback: array('i', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34])
   [INFO] [1744953728.821449308] [fibonacci_action_server]: Feedback: array('i', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
 
-This is because ``ros2 bag play`` sends the action goal request data from the bag file to the ``/fibonacci`` action.
+这是因为 ``ros2 bag play`` 将 bag 文件中的动作目标请求数据发送到 ``/fibonacci`` 动作。
 
-We can also introspect action communication as ``ros2 bag play`` is playing it back to verify the ``fibonacci_action_server``.
+我们还可以在 ``ros2 bag play`` 播放时内省动作通信以验证 ``fibonacci_action_server``。
 
-Run this command before ``ros2 bag play`` to see the ``fibonacci_action_server``.
-You can see the action goal request from the bag file and the service response from  ``fibonacci_action_server``:
+在 ``ros2 bag play`` 之前运行此命令以查看 ``fibonacci_action_server``。
+您可以看到来自 bag 文件的动作目标请求和来自 ``fibonacci_action_server`` 的服务响应：
 
 .. code-block:: console
 
@@ -716,22 +716,22 @@ You can see the action goal request from the bag file and the service response f
   ---
   ...
 
-Summary
--------
+总结
+----
 
-You can record data passed on topics, services and actions in your ROS 2 system using the ``ros2 bag`` command.
-Whether you're sharing your work with others or introspecting your own experiments, it's a great tool to know about.
+您可以使用 ``ros2 bag`` 命令记录 ROS 2 系统中主题、服务和动作上传递的数据。
+无论您是与他人分享工作还是内省自己的实验，这都是一个值得了解的好工具。
 
-Next steps
-----------
+下一步
+------
 
-You've completed the "Beginner: CLI Tools" tutorials!
-The next step is tackling the "Beginner: Client Libraries" tutorials, starting with :doc:`../../Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace`.
+您已完成"初级：CLI 工具"教程！
+下一步是攻克"初级：客户端库"教程，从 :doc:`../../Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace` 开始。
 
-Related content
----------------
+相关内容
+--------
 
-A more thorough explanation of ``ros2 bag`` can be found in the README `here <https://github.com/ros2/rosbag2>`__.
-For more information on service recording and playback can be found in the design document `here <https://github.com/ros2/rosbag2/blob/{DISTRO}/docs/design/rosbag2_record_replay_service.md>`__.
-For more information on action recording and playback can be found in the design document `here <https://github.com/ros2/rosbag2/blob/{DISTRO}/docs/design/rosbag2_record_replay_action.md>`__.
-For more information on QoS compatibility and ``ros2 bag``, see :doc:`../../../How-To-Guides/Overriding-QoS-Policies-For-Recording-And-Playback`.
+关于 ``ros2 bag`` 的更详细说明可以在 `这里 <https://github.com/ros2/rosbag2>`__ 的 README 中找到。
+有关服务录制和播放的更多信息可以在 `这里 <https://github.com/ros2/rosbag2/blob/{DISTRO}/docs/design/rosbag2_record_replay_service.md>`__ 的设计文档中找到。
+有关动作录制和播放的更多信息可以在 `这里 <https://github.com/ros2/rosbag2/blob/{DISTRO}/docs/design/rosbag2_record_replay_action.md>`__ 的设计文档中找到。
+有关 QoS 兼容性和 ``ros2 bag`` 的更多信息，请参阅 :doc:`../../../How-To-Guides/Overriding-QoS-Policies-For-Recording-And-Playback`。

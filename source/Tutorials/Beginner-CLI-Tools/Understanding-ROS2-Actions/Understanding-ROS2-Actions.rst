@@ -4,117 +4,117 @@
 
 .. _ROS2Actions:
 
-Understanding actions
-=====================
+理解动作
+=========
 
-**Goal:** Introspect actions in ROS 2.
+**目标：** 检查 ROS 2 中的动作。
 
-**Tutorial level:** Beginner
+**教程级别：** 初级
 
-**Time:** 15 minutes
+**时间：** 15 分钟
 
-.. contents:: Contents
+.. contents:: 目录
    :depth: 2
    :local:
 
-Background
-----------
+背景
+----
 
-Actions are one of the communication types in ROS 2 and are intended for long running tasks.
-They consist of three parts: a goal, feedback, and a result.
+动作是 ROS 2 中的通信类型之一，旨在用于长时间运行的任务。
+它们由三部分组成：目标、反馈和结果。
 
-Actions are built on topics and services.
-Their functionality is similar to services, except actions can be canceled.
-They also provide steady feedback, as opposed to services which return a single response.
+动作建立在主题和服务之上。
+它们的功能类似于服务，不同之处在于动作可以被取消。
+它们还提供稳定的反馈，而不是返回单个响应的服务。
 
-Actions use a client-server model, similar to the publisher-subscriber model (described in the :doc:`topics tutorial <../Understanding-ROS2-Topics/Understanding-ROS2-Topics>`).
-An "action client" node sends a goal to an "action server" node that acknowledges the goal and returns a stream of feedback and a result.
+动作使用客户端-服务端模型，类似于发布者-订阅者模型（在 :doc:`主题教程 <../Understanding-ROS2-Topics/Understanding-ROS2-Topics>` 中描述）。
+"动作客户端"节点向"动作服务端"节点发送目标，该节点确认目标并返回反馈流和结果。
 
 .. image:: images/Action-SingleActionClient.gif
 
-Prerequisites
--------------
+前提条件
+---------
 
-This tutorial builds off concepts, like :doc:`nodes <../Understanding-ROS2-Nodes/Understanding-ROS2-Nodes>` and :doc:`topics <../Understanding-ROS2-Topics/Understanding-ROS2-Topics>`, covered in previous tutorials.
+本教程建立在之前教程中介绍的概念之上，如 :doc:`节点 <../Understanding-ROS2-Nodes/Understanding-ROS2-Nodes>` 和 :doc:`主题 <../Understanding-ROS2-Topics/Understanding-ROS2-Topics>`。
 
-This tutorial uses the :doc:`turtlesim package <../Introducing-Turtlesim/Introducing-Turtlesim>`.
+本教程使用 :doc:`turtlesim 软件包 <../Introducing-Turtlesim/Introducing-Turtlesim>`。
 
-As always, don't forget to source ROS 2 in :doc:`every new terminal you open <../Configuring-ROS2-Environment>`.
+一如既往，不要忘记在 :doc:`打开的每个新终端 <../Configuring-ROS2-Environment>` 中 source ROS 2。
 
-Tasks
------
+任务
+----
 
-1 Setup
-^^^^^^^
+1 设置
+^^^^^^
 
-Start up the two turtlesim nodes, ``/turtlesim`` and ``/teleop_turtle``.
+启动两个 turtlesim 节点，``/turtlesim`` 和 ``/teleop_turtle``。
 
-Open a new terminal and run:
+打开一个新终端并运行：
 
 .. code-block:: console
 
   $ ros2 run turtlesim turtlesim_node
 
-Open another terminal and run:
+打开另一个终端并运行：
 
 .. code-block:: console
 
   $ ros2 run turtlesim turtle_teleop_key
 
 
-2 Use actions
-^^^^^^^^^^^^^
+2 使用动作
+^^^^^^^^^^
 
-When you launch the ``/teleop_turtle`` node, you will see the following message in your terminal:
+当您启动 ``/teleop_turtle`` 节点时，您将在终端中看到以下消息：
 
 .. code-block:: console
 
     Use arrow keys to move the turtle.
     Use G|B|V|C|D|E|R|T keys to rotate to absolute orientations. 'F' to cancel a rotation.
 
-Let's focus on the second line, which corresponds to an action.
-(The first instruction corresponds to the "cmd_vel" topic, discussed previously in the :doc:`topics tutorial <../Understanding-ROS2-Topics/Understanding-ROS2-Topics>`.)
+让我们关注第二行，它对应一个动作。
+（第一条指令对应 "cmd_vel" 主题，之前在 :doc:`主题教程 <../Understanding-ROS2-Topics/Understanding-ROS2-Topics>` 中讨论过。）
 
-Notice that the letter keys ``G|B|V|C|D|E|R|T`` form a "box" around the ``F`` key on a US QWERTY keyboard (if you are not using a QWERTY keyboard, see `this link <https://upload.wikimedia.org/wikipedia/commons/d/da/KB_United_States.svg>`__ to follow along).
-Each key's position around ``F`` corresponds to that orientation in turtlesim.
-For example, the ``E`` will rotate the turtle's orientation to the upper left corner.
+请注意，字母键 ``G|B|V|C|D|E|R|T`` 在美式 QWERTY 键盘上围绕 ``F`` 键形成一个"框"（如果您使用的不是 QWERTY 键盘，请参阅 `此链接 <https://upload.wikimedia.org/wikipedia/commons/d/da/KB_United_States.svg>`__ 来跟随操作）。
+每个键在 ``F`` 周围的位置对应于 turtlesim 中的那个方向。
+例如，``E`` 将把海龟的方向旋转到左上角。
 
-Pay attention to the terminal where the ``/turtlesim`` node is running.
-Each time you press one of these keys, you are sending a goal to an action server that is part of the ``/turtlesim`` node.
-The goal is to rotate the turtle to face a particular direction.
-A message relaying the result of the goal should display once the turtle completes its rotation:
+注意运行 ``/turtlesim`` 节点的终端。
+每次按下其中一个键时，您都在向 ``/turtlesim`` 节点中的动作服务端发送目标。
+目标是让海龟旋转到面向特定方向。
+一旦海龟完成旋转，应该显示一条传递目标结果的消息：
 
 .. code-block:: console
 
     [INFO] [turtlesim]: Rotation goal completed successfully
 
-The ``F`` key will cancel a goal mid-execution.
+``F`` 键将在执行过程中取消目标。
 
-Try pressing the ``C`` key, and then pressing the ``F`` key before the turtle can complete its rotation.
-In the terminal where the ``/turtlesim`` node is running, you will see the message:
+尝试按下 ``C`` 键，然后在海龟完成旋转之前按下 ``F`` 键。
+在运行 ``/turtlesim`` 节点的终端中，您将看到消息：
 
 .. code-block:: console
 
   [INFO] [turtlesim]: Rotation goal canceled
 
-Not only can the client-side (your input in the teleop) stop a goal, but the server-side (the ``/turtlesim`` node) can as well.
-When the server-side chooses to stop processing a goal, it is said to "abort" the goal.
+不仅客户端（您在 teleop 中的输入）可以停止目标，服务端（``/turtlesim`` 节点）也可以。
+当服务端选择停止处理目标时，称为"中止"目标。
 
-Try hitting the ``D`` key, then the ``G`` key before the first rotation can complete.
-In the terminal where the ``/turtlesim`` node is running, you will see the message:
+尝试按下 ``D`` 键，然后在第一次旋转完成之前按下 ``G`` 键。
+在运行 ``/turtlesim`` 节点的终端中，您将看到消息：
 
 .. code-block:: console
 
   [WARN] [turtlesim]: Rotation goal received before a previous goal finished. Aborting previous goal
 
-This action server chose to abort the first goal because it got a new one.
-It could have chosen something else, like reject the new goal or execute the second goal after the first one finished.
-Don't assume every action server will choose to abort the current goal when it gets a new one.
+此动作服务端选择中止第一个目标，因为它收到了新目标。
+它可以选择其他方式，例如拒绝新目标或在第一个目标完成后执行第二个目标。
+不要假设每个动作服务端在收到新目标时都会选择中止当前目标。
 
 3 ros2 node info
 ^^^^^^^^^^^^^^^^
 
-To see the list of actions a node provides, ``/turtlesim`` in this case, open a new terminal and run the command:
+要查看节点提供的动作列表（本例中为 ``/turtlesim``），打开一个新终端并运行命令：
 
 .. code-block:: console
 
@@ -148,13 +148,13 @@ To see the list of actions a node provides, ``/turtlesim`` in this case, open a 
       /turtle1/rotate_absolute: turtlesim_msgs/action/RotateAbsolute
     Action Clients:
 
-The command returns a list of ``/turtlesim``'s subscribers, publishers, services, action servers and action clients.
+该命令返回 ``/turtlesim`` 的订阅者、发布者、服务、动作服务端和动作客户端列表。
 
-Notice that the ``/turtle1/rotate_absolute`` action for ``/turtlesim`` is under ``Action Servers``.
-This means ``/turtlesim`` responds to and provides feedback for the ``/turtle1/rotate_absolute`` action.
+请注意，``/turtlesim`` 的 ``/turtle1/rotate_absolute`` 动作位于 ``Action Servers`` 下。
+这意味着 ``/turtlesim`` 响应 ``/turtle1/rotate_absolute`` 动作并提供反馈。
 
-The ``/teleop_turtle`` node has the name ``/turtle1/rotate_absolute`` under ``Action Clients`` meaning that it sends goals for that action name.
-To see that, run:
+``/teleop_turtle`` 节点在 ``Action Clients`` 下有名称 ``/turtle1/rotate_absolute``，这意味着它为该动作名称发送目标。
+要查看这一点，请运行：
 
 .. code-block:: console
 
@@ -183,35 +183,35 @@ To see that, run:
 4 ros2 action list
 ^^^^^^^^^^^^^^^^^^
 
-To identify all the actions in the ROS graph, run the command:
+要识别 ROS 图中的所有动作，运行命令：
 
 .. code-block:: console
 
   $ ros2 action list
   /turtle1/rotate_absolute
 
-This is the only action in the ROS graph right now.
-It controls the turtle's rotation, as you saw earlier.
-You also already know that there is one action client (part of ``/teleop_turtle``) and one action server (part of ``/turtlesim``) for this action from using the ``ros2 node info <node_name>`` command.
+这是 ROS 图中目前唯一的动作。
+它控制海龟的旋转，正如您之前看到的。
+您还已经通过使用 ``ros2 node info <node_name>`` 命令知道此动作有一个动作客户端（``/teleop_turtle`` 的一部分）和一个动作服务端（``/turtlesim`` 的一部分）。
 
 4.1 ros2 action list -t
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Actions have types, similar to topics and services.
-To find ``/turtle1/rotate_absolute``'s type, run the command:
+动作有类型，类似于主题和服务。
+要查找 ``/turtle1/rotate_absolute`` 的类型，运行命令：
 
 .. code-block:: console
 
   $ ros2 action list -t
   /turtle1/rotate_absolute [turtlesim_msgs/action/RotateAbsolute]
 
-In brackets to the right of each action name (in this case only ``/turtle1/rotate_absolute``) is the action type, ``turtlesim_msgs/action/RotateAbsolute``.
-You will need this when you want to execute an action from the command line or from code.
+每个动作名称右侧的括号中（本例中只有 ``/turtle1/rotate_absolute``）是动作类型 ``turtlesim_msgs/action/RotateAbsolute``。
+当您想从命令行或代码执行动作时，您需要这个信息。
 
 5 ros2 action type
 ^^^^^^^^^^^^^^^^^^
 
-If you want to check the action type for the action, run the command:
+如果您想检查动作的动作类型，运行命令：
 
 .. code-block:: console
 
@@ -221,7 +221,7 @@ If you want to check the action type for the action, run the command:
 6 ros2 action info
 ^^^^^^^^^^^^^^^^^^
 
-You can further introspect the ``/turtle1/rotate_absolute`` action with the command:
+您可以使用以下命令进一步检查 ``/turtle1/rotate_absolute`` 动作：
 
 .. code-block:: console
 
@@ -232,22 +232,22 @@ You can further introspect the ``/turtle1/rotate_absolute`` action with the comm
   Action servers: 1
       /turtlesim
 
-This tells us what we learned earlier from running ``ros2 node info`` on each node:
-The ``/teleop_turtle`` node has an action client and the ``/turtlesim`` node has an action server for the ``/turtle1/rotate_absolute`` action.
+这告诉了我们之前通过在每个节点上运行 ``ros2 node info`` 学到的内容：
+``/teleop_turtle`` 节点有一个动作客户端，``/turtlesim`` 节点有一个 ``/turtle1/rotate_absolute`` 动作的动作服务端。
 
 7 ros2 interface show
 ^^^^^^^^^^^^^^^^^^^^^
 
-One more piece of information you will need before sending or executing an action goal yourself is the structure of the action type.
+在自行发送或执行动作目标之前，您需要的另一个信息是动作类型的结构。
 
-Recall that you identified ``/turtle1/rotate_absolute``'s type when running the command ``ros2 action list -t``.
-Enter the following command with the action type in your terminal:
+回想一下，您在运行命令 ``ros2 action list -t`` 时确定了 ``/turtle1/rotate_absolute`` 的类型。
+在终端中输入以下命令，带上动作类型：
 
 .. code-block:: console
 
   $ ros2 interface show turtlesim_msgs/action/RotateAbsolute
 
-Which will return:
+这将返回：
 
 .. code-block:: text
 
@@ -260,22 +260,22 @@ Which will return:
   # The remaining rotation in radians
   float32 remaining
 
-The section of this message above the first ``---`` is the structure (data type and name) of the goal request.
-The next section is the structure of the result.
-The last section is the structure of the feedback.
+第一个 ``---`` 上方的消息部分是目标请求的结构（数据类型和名称）。
+下一部分是结果的结构。
+最后一部分是反馈的结构。
 
 8 ros2 action send_goal
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Now let's send an action goal from the command line with the following syntax:
+现在让我们使用以下语法从命令行发送动作目标：
 
 .. code-block:: console
 
   $ ros2 action send_goal <action_name> <action_type> <values>
 
-``<values>`` need to be in YAML format.
+``<values>`` 需要是 YAML 格式。
 
-Keep an eye on the turtlesim window, and enter the following command into your terminal:
+注意 turtlesim 窗口，并在终端中输入以下命令：
 
 .. code-block:: console
 
@@ -292,13 +292,13 @@ Keep an eye on the turtlesim window, and enter the following command into your t
   Goal finished with status: SUCCEEDED
 
 
-You should see the turtle rotating.
+您应该看到海龟正在旋转。
 
 
-All goals have a unique ID, shown in the return message.
-You can also see the result, a field with the name ``delta``, which is the displacement to the starting position.
+所有目标都有一个唯一 ID，显示在返回消息中。
+您还可以看到结果，一个名为 ``delta`` 的字段，它是到起始位置的位移。
 
-To see the feedback of this goal, add ``--feedback`` to the ``ros2 action send_goal`` command:
+要查看此目标的反馈，请在 ``ros2 action send_goal`` 命令中添加 ``--feedback``：
 
 .. code-block:: console
 
@@ -321,23 +321,23 @@ To see the feedback of this goal, add ``--feedback`` to the ``ros2 action send_g
 
   Goal finished with status: SUCCEEDED
 
-You will continue to receive feedback, the remaining radians, until the goal is complete.
+您将继续收到反馈，即剩余弧度，直到目标完成。
 
 .. _understanding-actions-ros2-action-echo:
 
 9 ros2 action echo
 ^^^^^^^^^^^^^^^^^^
 
-To see the data communication between an action client and an action server you can ``echo`` the action data using:
+要查看动作客户端和动作服务端之间的数据通信，您可以使用以下命令 ``echo`` 动作数据：
 
 .. code-block:: console
 
   $ ros2 action echo <action_name> <optional arguments/action_type>
 
-``ros2 action echo`` depends on action introspection of an action client and server, that is disabled by default.
-To enable it, users must call ``configure_introspection`` after creating an action client or server.
+``ros2 action echo`` 依赖于动作客户端和服务端的动作内省，默认情况下是禁用的。
+要启用它，用户必须在创建动作客户端或服务端后调用 ``configure_introspection``。
 
-Start up the ``fibonacci_action_server`` and ``fibonacci_action_client``, enabling ``action_server_configure_introspection`` parameter for demonstration.
+启动 ``fibonacci_action_server`` 和 ``fibonacci_action_client``，启用 ``action_server_configure_introspection`` 参数进行演示。
 
 .. code-block:: console
 
@@ -347,7 +347,7 @@ Start up the ``fibonacci_action_server`` and ``fibonacci_action_client``, enabli
 
   $ ros2 run action_tutorials_py fibonacci_action_client --ros-args -p action_client_configure_introspection:=contents
 
-Now we are able to see the action communication between ``fibonacci_action_server`` and ``fibonacci_action_client`` via ``ros2 action echo``.
+现在我们可以通过 ``ros2 action echo`` 查看 ``fibonacci_action_server`` 和 ``fibonacci_action_client`` 之间的动作通信。
 
 .. code-block:: console
 
@@ -398,27 +398,27 @@ Now we are able to see the action communication between ``fibonacci_action_serve
 
 .. note::
 
-   This feature is available on ``Kilted Kaiju`` or later.
+   此功能在 ``Kilted Kaiju`` 或更高版本上可用。
 
-Summary
--------
+总结
+----
 
-Actions are like services that allow you to execute long running tasks, provide regular feedback, and are cancelable.
+动作类似于服务，允许您执行长时间运行的任务、提供定期反馈，并且可以取消。
 
-A robot system would likely use actions for navigation.
-An action goal could tell a robot to travel to a position.
-While the robot navigates to the position, it can send updates along the way (i.e. feedback), and then a final result message once it's reached its destination.
+机器人系统可能会使用动作进行导航。
+动作目标可以告诉机器人前往某个位置。
+当机器人导航到该位置时，它可以沿途发送更新（即反馈），然后在到达目的地后发送最终结果消息。
 
-Turtlesim has an action server that action clients can send goals to for rotating turtles.
-In this tutorial, you introspected that action, ``/turtle1/rotate_absolute``, to get a better idea of what actions are and how they work.
+Turtlesim 有一个动作服务端，动作客户端可以向其发送目标以旋转海龟。
+在本教程中，您检查了该动作 ``/turtle1/rotate_absolute``，以更好地了解什么是动作以及它们如何工作。
 
-Next steps
-----------
+下一步
+------
 
-Now you've covered all of the core ROS 2 concepts.
-The last few tutorials in this set will introduce you to some tools and techniques that will make using ROS 2 easier, starting with :doc:`../Using-Rqt-Console/Using-Rqt-Console`.
+现在您已经涵盖了所有核心 ROS 2 概念。
+本系列的最后几篇教程将向您介绍一些工具和技术，使使用 ROS 2 更容易，从 :doc:`../Using-Rqt-Console/Using-Rqt-Console` 开始。
 
-Related content
----------------
+相关内容
+--------
 
-You can read more about the design decisions behind actions in ROS 2 `here <https://design.ros2.org/articles/actions.html>`__.
+您可以在 `这里 <https://design.ros2.org/articles/actions.html>`__ 阅读更多关于 ROS 2 中动作设计决策的信息。

@@ -7,58 +7,58 @@
 Writing a simple publisher and subscriber (Python)
 ==================================================
 
-**Goal:** Create and run a publisher and subscriber node using Python.
+**目标：** 使用 Python 创建并运行发布者和订阅者节点。
 
-**Tutorial level:** Beginner
+**教程级别：** 初级
 
-**Time:** 20 minutes
+**时间：** 20 分钟
 
-.. contents:: Contents
+.. contents:: 目录
    :depth: 2
    :local:
 
-Background
-----------
+背景
+----
 
-In this tutorial, you will create :doc:`nodes <../Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes>` that pass information in the form of string messages to each other over a :doc:`topic <../Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics>`.
-The example used here is a simple "talker" and "listener" system;
-one node publishes data and the other subscribes to the topic so it can receive that data.
+在本教程中，您将创建 :doc:`节点 <../Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes>`，它们通过 :doc:`主题 <../Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics>` 以字符串消息的形式相互传递信息。
+这里使用的示例是一个简单的"发布者"和"订阅者"系统；
+一个节点发布数据，另一个节点订阅主题以便接收该数据。
 
-The code used in these examples can be found `here <https://github.com/ros2/examples/tree/{REPOS_FILE_BRANCH}/rclpy/topics>`__.
+这些示例中使用的代码可以在 `这里 <https://github.com/ros2/examples/tree/{REPOS_FILE_BRANCH}/rclpy/topics>`__ 找到。
 
-Prerequisites
--------------
+前提条件
+--------
 
-In previous tutorials, you learned how to :doc:`create a workspace <./Creating-A-Workspace/Creating-A-Workspace>` and :doc:`create a package <./Creating-Your-First-ROS2-Package>`.
+在之前的教程中，您学习了如何 :doc:`创建工作空间 <./Creating-A-Workspace/Creating-A-Workspace>` 和 :doc:`创建包 <./Creating-Your-First-ROS2-Package>`。
 
-A basic understanding of Python is recommended, but not entirely necessary.
+建议对 Python 有基本了解，但并非完全必要。
 
-Tasks
------
+任务
+----
 
-1 Create a package
-^^^^^^^^^^^^^^^^^^
+1 创建包
+^^^^^^^^
 
-Open a new terminal and :doc:`source your ROS 2 installation <../Beginner-CLI-Tools/Configuring-ROS2-Environment>` so that ``ros2`` commands will work.
+打开一个新终端并 :doc:`source 您的 ROS 2 安装 <../Beginner-CLI-Tools/Configuring-ROS2-Environment>`，以便 ``ros2`` 命令可以工作。
 
-Navigate into the ``ros2_ws`` directory created in a :ref:`previous tutorial <new-directory>`.
+导航到在 :ref:`之前的教程 <new-directory>` 中创建的 ``ros2_ws`` 目录。
 
-Recall that packages should be created in the ``src`` directory, not the root of the workspace.
-So, navigate into ``ros2_ws/src``, and run the package creation command:
+回想一下，包应该在 ``src`` 目录中创建，而不是工作空间的根目录。
+因此，导航到 ``ros2_ws/src``，并运行包创建命令：
 
 .. code-block:: console
 
   $ ros2 pkg create --build-type ament_python --license Apache-2.0 py_pubsub
 
-Your terminal will return a message verifying the creation of your package ``py_pubsub`` and all its necessary files and folders.
+您的终端将返回一条消息，验证您的包 ``py_pubsub`` 及其所有必要文件和文件夹的创建。
 
-2 Write the publisher node
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+2 编写发布者节点
+^^^^^^^^^^^^^^^^
 
-Navigate into ``ros2_ws/src/py_pubsub/py_pubsub``.
-Recall that this directory is a `Python package <https://docs.python.org/3/tutorial/modules.html#packages>`__ with the same name as the ROS 2 package it's nested in.
+导航到 ``ros2_ws/src/py_pubsub/py_pubsub``。
+回想一下，此目录是一个 `Python 包 <https://docs.python.org/3/tutorial/modules.html#packages>`__，与它所在的 ROS 2 包同名。
 
-Download the example talker code by entering the following command:
+通过输入以下命令下载示例 talker 代码：
 
 .. tabs::
 
@@ -88,9 +88,9 @@ Download the example talker code by entering the following command:
 
             $ curl https://raw.githubusercontent.com/ros2/examples/{REPOS_FILE_BRANCH}/rclpy/topics/minimal_publisher/examples_rclpy_minimal_publisher/publisher_member_function.py -o publisher_member_function.py
 
-Now there will be a new file named ``publisher_member_function.py`` adjacent to ``__init__.py``.
+现在将在 ``__init__.py`` 旁边有一个名为 ``publisher_member_function.py`` 的新文件。
 
-Open the file using your preferred text editor.
+使用您喜欢的文本编辑器打开该文件。
 
 .. code-block:: python
 
@@ -132,10 +132,10 @@ Open the file using your preferred text editor.
       main()
 
 
-2.1 Examine the code
-~~~~~~~~~~~~~~~~~~~~
+2.1 检查代码
+~~~~~~~~~~~~
 
-The first lines of code after the comments import ``rclpy`` so its ``Node`` class can be used.
+注释后的第一行代码导入 ``rclpy``，以便可以使用其 ``Node`` 类。
 
 .. code-block:: python
 
@@ -143,29 +143,29 @@ The first lines of code after the comments import ``rclpy`` so its ``Node`` clas
   from rclpy.executors import ExternalShutdownException
   from rclpy.node import Node
 
-The next statement imports the built-in string message type that the node uses to structure the data that it passes on the topic.
+下一个语句导入节点用于结构化其在主题上传递的数据的内置字符串消息类型。
 
 .. code-block:: python
 
   from std_msgs.msg import String
 
-These lines represent the node's dependencies.
-Recall that dependencies have to be added to ``package.xml``, which you'll do in the next section.
+这些行表示节点的依赖项。
+回想一下，依赖项必须添加到 ``package.xml`` 中，您将在下一节中执行此操作。
 
-Next, the ``MinimalPublisher`` class is created, which inherits from (or is a subclass of) ``Node``.
+接下来，创建了 ``MinimalPublisher`` 类，它继承自（或是其子类）``Node``。
 
 .. code-block:: python
 
   class MinimalPublisher(Node):
 
-Following is the definition of the class's constructor.
-``super().__init__`` calls the ``Node`` class's constructor and gives it your node name, in this case ``minimal_publisher``.
+接下来是类的构造函数的定义。
+``super().__init__`` 调用 ``Node`` 类的构造函数并为其提供节点名称，在本例中为 ``minimal_publisher``。
 
-``create_publisher`` declares that the node publishes messages of type ``String`` (imported from the ``std_msgs.msg`` module), over a topic named ``topic``, and that the "queue size" is 10.
-Queue size is a required QoS (quality of service) setting that limits the amount of queued messages if a subscriber is not receiving them fast enough.
+``create_publisher`` 声明节点在名为 ``topic`` 的主题上发布类型为 ``String``（从 ``std_msgs.msg`` 模块导入）的消息，并且"队列大小"为 10。
+队列大小是必需的 QoS（服务质量）设置，如果订阅者接收消息的速度不够快，则限制排队消息的数量。
 
-Next, a timer is created with a callback to execute every 0.5 seconds.
-``self.i`` is a counter used in the callback.
+接下来，创建一个计时器，回调每 0.5 秒执行一次。
+``self.i`` 是回调中使用的计数器。
 
 .. code-block:: python
 
@@ -176,7 +176,7 @@ Next, a timer is created with a callback to execute every 0.5 seconds.
       self.timer = self.create_timer(timer_period, self.timer_callback)
       self.i = 0
 
-``timer_callback`` creates a message with the counter value appended, and publishes it to the console with ``get_logger().info``.
+``timer_callback`` 创建一个附加了计数器值的消息，并使用 ``get_logger().info`` 将其发布到控制台。
 
 .. code-block:: python
 
@@ -201,16 +201,16 @@ Lastly, the main function is defined.
           pass
 
 
-First the ``rclpy`` library is initialized, then the node is created, and then it "spins" the node so its callbacks are called.
+首先初始化 ``rclpy`` 库，然后创建节点，然后"spin"节点以便调用其回调。
 
-2.2 Add dependencies
-~~~~~~~~~~~~~~~~~~~~
+2.2 添加依赖项
+~~~~~~~~~~~~~~
 
-Navigate one level back to the ``ros2_ws/src/py_pubsub`` directory, where the ``setup.py``, ``setup.cfg``, and ``package.xml`` files have been created for you.
+返回上一级到 ``ros2_ws/src/py_pubsub`` 目录，那里已经为您创建了 ``setup.py``、``setup.cfg`` 和 ``package.xml`` 文件。
 
-Open ``package.xml`` with your text editor.
+使用文本编辑器打开 ``package.xml``。
 
-As mentioned in the :doc:`previous tutorial <./Creating-Your-First-ROS2-Package>`, make sure to fill in the ``<description>``, ``<maintainer>`` and ``<license>`` tags:
+正如 :doc:`之前的教程 <./Creating-Your-First-ROS2-Package>` 中提到的，确保填写 ``<description>``、``<maintainer>`` 和 ``<license>`` 标签：
 
 .. code-block:: xml
 
@@ -218,22 +218,22 @@ As mentioned in the :doc:`previous tutorial <./Creating-Your-First-ROS2-Package>
   <maintainer email="you@email.com">Your Name</maintainer>
   <license>Apache-2.0</license>
 
-After the lines above, add the following dependencies corresponding to your node's import statements:
+在上述行之后，添加与您的节点导入语句对应的以下依赖项：
 
 .. code-block:: xml
 
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
 
-This declares the package needs ``rclpy`` and ``std_msgs`` when its code is executed.
+这声明了包在执行代码时需要 ``rclpy`` 和 ``std_msgs``。
 
-Make sure to save the file.
+确保保存文件。
 
-2.3 Add an entry point
-~~~~~~~~~~~~~~~~~~~~~~
+2.3 添加入口点
+~~~~~~~~~~~~~~
 
-Open the ``setup.py`` file.
-Again, match the ``maintainer``, ``maintainer_email``, ``description`` and ``license`` fields to your ``package.xml``:
+打开 ``setup.py`` 文件。
+同样，将 ``maintainer``、``maintainer_email``、``description`` 和 ``license`` 字段与您的 ``package.xml`` 匹配：
 
 .. code-block:: python
 
@@ -242,7 +242,7 @@ Again, match the ``maintainer``, ``maintainer_email``, ``description`` and ``lic
   description='Examples of minimal publisher/subscriber using rclpy',
   license='Apache-2.0',
 
-Add the following line within the ``console_scripts`` brackets of the ``entry_points`` field:
+在 ``entry_points`` 字段的 ``console_scripts`` 括号内添加以下行：
 
 .. code-block:: python
 
@@ -252,12 +252,12 @@ Add the following line within the ``console_scripts`` brackets of the ``entry_po
           ],
   },
 
-Don't forget to save.
+不要忘记保存。
 
-2.4 Check setup.cfg
-~~~~~~~~~~~~~~~~~~~
+2.4 检查 setup.cfg
+~~~~~~~~~~~~~~~~~~
 
-The contents of the ``setup.cfg`` file should be correctly populated automatically, like so:
+``setup.cfg`` 文件的内容应该自动正确填充，如下所示：
 
 .. code-block:: ini
 
@@ -266,15 +266,15 @@ The contents of the ``setup.cfg`` file should be correctly populated automatical
   [install]
   install_scripts=$base/lib/py_pubsub
 
-This is simply telling setuptools to put your executables in ``lib``, because ``ros2 run`` will look for them there.
+这只是告诉 setuptools 将您的可执行文件放在 ``lib`` 中，因为 ``ros2 run`` 会在那里查找它们。
 
-You could build your package now, source the local setup files, and run it, but let's create the subscriber node first so you can see the full system at work.
+您现在可以构建包、source 本地设置文件并运行它，但让我们先创建订阅者节点，以便您可以看到完整系统的运行。
 
-3 Write the subscriber node
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 编写订阅者节点
+^^^^^^^^^^^^^^^^
 
-Return to ``ros2_ws/src/py_pubsub/py_pubsub`` to create the next node.
-Enter the following code in your terminal:
+返回 ``ros2_ws/src/py_pubsub/py_pubsub`` 创建下一个节点。
+在终端中输入以下代码：
 
 .. tabs::
 
@@ -304,16 +304,16 @@ Enter the following code in your terminal:
 
             $ curl https://raw.githubusercontent.com/ros2/examples/{REPOS_FILE_BRANCH}/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber/subscriber_member_function.py -o subscriber_member_function.py
 
-Now the directory should have these files:
+现在目录应该包含这些文件：
 
 .. code-block:: console
 
   __init__.py  publisher_member_function.py  subscriber_member_function.py
 
-3.1 Examine the code
-~~~~~~~~~~~~~~~~~~~~
+3.1 检查代码
+~~~~~~~~~~~~
 
-Open the ``subscriber_member_function.py`` with your text editor.
+使用文本编辑器打开 ``subscriber_member_function.py``。
 
 .. code-block:: python
 
@@ -352,9 +352,9 @@ Open the ``subscriber_member_function.py`` with your text editor.
   if __name__ == '__main__':
       main()
 
-The subscriber node's code is nearly identical to the publisher's.
-The constructor creates a subscriber with the same arguments as the publisher.
-Recall from the :doc:`topics tutorial <../Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics>` that the topic name and message type used by the publisher and subscriber must match to allow them to communicate.
+订阅者节点的代码与发布者的代码几乎相同。
+构造函数使用与发布者相同的参数创建订阅者。
+回想 :doc:`主题教程 <../Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics>`，发布者和订阅者使用的主题名称和消息类型必须匹配才能允许它们通信。
 
 .. code-block:: python
 
@@ -364,18 +364,18 @@ Recall from the :doc:`topics tutorial <../Beginner-CLI-Tools/Understanding-ROS2-
       self.listener_callback,
       10)
 
-The subscriber's constructor and callback don't include any timer definition, because it doesn't need one.
-Its callback gets called as soon as it receives a message.
+订阅者的构造函数和回调不包含任何计时器定义，因为它不需要。
+它的回调在收到消息后立即被调用。
 
-The callback definition simply prints an info message to the console, along with the data it received.
-Recall that the publisher defines ``msg.data = 'Hello World: %d' % self.i``
+回调定义只是将信息消息打印到控制台，以及它收到的数据。
+回想一下，发布者定义了 ``msg.data = 'Hello World: %d' % self.i``
 
 .. code-block:: python
 
   def listener_callback(self, msg):
       self.get_logger().info('I heard: "%s"' % msg.data)
 
-The ``main`` definition is almost exactly the same, replacing the creation and spinning of the publisher with the subscriber.
+``main`` 定义几乎完全相同，用订阅者替换发布者的创建和旋转。
 
 .. code-block:: python
 
@@ -383,15 +383,15 @@ The ``main`` definition is almost exactly the same, replacing the creation and s
 
   rclpy.spin(minimal_subscriber)
 
-Since this node has the same dependencies as the publisher, there's nothing new to add to ``package.xml``.
-The ``setup.cfg`` file can also remain untouched.
+由于此节点与发布者具有相同的依赖项，因此无需向 ``package.xml`` 添加新内容。
+``setup.cfg`` 文件也可以保持不变。
 
 
-3.2 Add an entry point
-~~~~~~~~~~~~~~~~~~~~~~
+3.2 添加入口点
+~~~~~~~~~~~~~~
 
-Reopen ``setup.py`` and add the entry point for the subscriber node below the publisher's entry point.
-The ``entry_points`` field should now look like this:
+重新打开 ``setup.py`` 并在发布者的入口点下方添加订阅者节点的入口点。
+``entry_points`` 字段现在应该如下所示：
 
 .. code-block:: python
 

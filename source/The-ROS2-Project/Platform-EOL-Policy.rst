@@ -1,46 +1,46 @@
 .. _PlatformEOLPolicy:
 
-Platform EOL Policy
-===================
+平台 EOL 政策
+=============
 
-.. contents:: Table of Contents
+.. contents:: 目录
    :depth: 1
    :local:
 
-:doc:`ROS distributions <../Releases>` do not support end-of-life (EOL) platforms, even if the ROS distribution is still active.
-This page explains:
+:doc:`ROS 发行版 <../Releases>` 不支持已结束生命周期（EOL）的平台，即使该 ROS 发行版仍处于活跃状态。
+本页面解释了：
 
-* What users of EOL platforms should expect
-* What ROS Bosses should do
+* EOL 平台用户应该注意什么
+* ROS 负责人应该做什么
 
-Policy
-------
+政策
+----
 
-Every ROS distribution supports certain **platforms**, such as Windows 11 or Ubuntu 24.04.
-**Vendors** of these platforms, such as Microsoft or Canonical, decide how long they will support one of their platforms.
-When a vendor decides a platform has reached EOL, they usually stop publishing critical bug and security fixes.
-To protect ourselves from potentially unpatched security vulnerabilities, we proactively remove all jobs on EOL platforms from the ROS build farm.
+每个 ROS 发行版都支持特定的**平台**，例如 Windows 11 或 Ubuntu 24.04。
+这些平台的**供应商**，例如 Microsoft 或 Canonical，决定其平台的支持时长。
+当供应商决定某个平台已达到 EOL 时，通常会停止发布关键错误修复和安全补丁。
+为了保护我们免受潜在未修补的安全漏洞影响，我们会主动从 ROS 构建农场中移除所有 EOL 平台上的作业。
 
-If you are using a platform that is no longer supported by its vendor, you should expect to stop receiving updated ROS packages.
-Existing ROS packages will remain available and functional, but they will no longer be updated.
-However, ROS Bosses may choose to update packages on an EOL platform in exceptional circumstances.
+如果您正在使用的平台已不再受供应商支持，您应该预期将停止接收更新的 ROS 软件包。
+现有的 ROS 软件包将保持可用和功能正常，但不会再进行更新。
+然而，ROS 负责人在特殊情况下可以选择在 EOL 平台上更新软件包。
 
-For ROS Bosses
+ROS 负责人须知
 --------------
 
-Before a target platform reaches EOL:
+在目标平台达到 EOL 之前：
 
-* Make sure the ROS distribution documentation includes EOL dates for any platform that reaches EOL before the ROS distribution.
-* Post an announcement about the platform reaching EOL at least 2 syncs (roughly 60-90 days) beforehand so that package maintainers have time to update their packages.
-* Open a `pull request disabling buildfarm jobs for that platform <https://github.com/ros2/ros_buildfarm_config>`_ and seek review from the `Infrastructure PMC <https://osralliance.org/wp-content/uploads/2024/03/infrastructure_project_charter.pdf>`_.
-* Make one last sync to that platform.
+* 确保 ROS 发行版文档包含任何在 ROS 发行版之前达到 EOL 的平台的 EOL 日期。
+* 至少提前 2 次同步（大约 60-90 天）发布关于平台即将达到 EOL 的公告，以便软件包维护者有时间更新他们的软件包。
+* 提交一个`禁用该平台构建农场作业的拉取请求 <https://github.com/ros2/ros_buildfarm_config>`_ 并请求 `基础设施 PMC <https://osralliance.org/wp-content/uploads/2024/03/infrastructure_project_charter.pdf>`_ 审查。
+* 对该平台进行最后一次同步。
 
-After a target platform reaches EOL:
+在目标平台达到 EOL 之后：
 
-* Update the ROS distribution docs to state the platform will not receive updated ROS packages.
-* Announce that the ROS distribution has dropped support for that platform on Discourse.
-* Consider making one last release to that platform if:
-    * You did not already do so prior to EOL, and
-    * The updates seem unlikely to have regressions, and
-    * The ROS Buildfarm still has runners for that platform.
-* Merge your pull request to disable the buildfarm jobs.
+* 更新 ROS 发行版文档，说明该平台将不会收到更新的 ROS 软件包。
+* 在 Discourse 上宣布 ROS 发行版已放弃对该平台的支持。
+* 考虑对该平台进行最后一次发布，如果：
+    * 您在 EOL 之前尚未这样做，并且
+    * 更新似乎不太可能出现回归问题，并且
+    * ROS 构建农场仍有该平台的运行器。
+* 合并您的拉取请求以禁用构建农场作业。

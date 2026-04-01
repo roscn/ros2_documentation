@@ -7,50 +7,50 @@
 Configuring environment
 =======================
 
-**Goal:** This tutorial will show you how to prepare your ROS 2 environment.
+**目标：** 本教程将向您展示如何准备 ROS 2 环境。
 
-**Tutorial level:** Beginner
+**教程级别：** 初级
 
-**Time:** 5 minutes
+**时间：** 5 分钟
 
-.. contents:: Contents
+.. contents:: 目录
    :depth: 2
    :local:
 
-Background
-----------
+背景
+----
 
-ROS 2 relies on the notion of combining workspaces using the shell environment.
-"Workspace" is a ROS term for the location on your system where you're developing with ROS 2.
-The core ROS 2 workspace is called the underlay.
-Subsequent local workspaces are called overlays.
-When developing with ROS 2, you will typically have several workspaces active concurrently.
+ROS 2 依赖于使用 shell 环境组合工作空间的概念。
+"工作空间"是 ROS 术语，指的是您在系统上使用 ROS 2 进行开发的位置。
+核心 ROS 2 工作空间称为底层（underlay）。
+后续的本地工作空间称为覆盖层（overlay）。
+在使用 ROS 2 开发时，您通常会同时激活多个工作空间。
 
-Combining workspaces makes developing against different versions of ROS 2, or against different sets of packages, easier.
-It also allows the installation of several ROS 2 distributions (or "distros", e.g. Dashing and Eloquent) on the same computer and switching between them.
+组合工作空间使针对不同版本的 ROS 2 或不同软件包集合进行开发变得更加容易。
+它还允许在同一台计算机上安装多个 ROS 2 发行版（或"distros"，例如 Dashing 和 Eloquent）并在它们之间切换。
 
-This is accomplished by sourcing setup files every time you open a new shell, or by adding the source command to your shell startup script once.
-Without sourcing the setup files, you won't be able to access ROS 2 commands, or find or use ROS 2 packages.
-In other words, you won't be able to use ROS 2.
+这是通过每次打开新 shell 时 source 设置文件，或者将 source 命令一次性添加到 shell 启动脚本来实现的。
+如果不 source 设置文件，您将无法访问 ROS 2 命令，也无法找到或使用 ROS 2 软件包。
+换句话说，您将无法使用 ROS 2。
 
-Prerequisites
--------------
+前提条件
+--------
 
-Before starting these tutorials, install ROS 2 by following the instructions on the ROS 2 :doc:`../../Installation` page.
+在开始这些教程之前，请按照 ROS 2 :doc:`../../Installation` 页面上的说明安装 ROS 2。
 
-The commands used in this tutorial assume you followed the binary packages installation guide for your operating system (deb packages for Linux).
-You can still follow along if you built from source, but the path to your setup files will likely be different.
-You also won't be able to use the ``sudo apt install ros-<distro>-<package>`` command (used frequently in the beginner level tutorials) if you install from source.
+本教程中使用的命令假设您按照操作系统的二进制包安装指南进行操作（Linux 为 deb 包）。
+如果您是从源代码构建的，仍然可以继续，但设置文件的路径可能会有所不同。
+如果您从源代码安装，您也将无法使用 ``sudo apt install ros-<distro>-<package>`` 命令（在初级教程中经常使用）。
 
-If you are using Linux or macOS, but are not already familiar with the shell, `this tutorial <https://www.linux.com/training-tutorials/bash-101-working-cli/>`__ will help.
+如果您使用的是 Linux 或 macOS，但还不熟悉 shell，`这个教程 <https://www.linux.com/training-tutorials/bash-101-working-cli/>`__ 会对您有所帮助。
 
-Tasks
------
+任务
+----
 
-1 Source the setup files
-^^^^^^^^^^^^^^^^^^^^^^^^
+1 Source 设置文件
+^^^^^^^^^^^^^^^^^^
 
-You will need to run this command on every new shell you open to have access to the ROS 2 commands, like so:
+您需要在打开的每个新 shell 中运行此命令才能访问 ROS 2 命令，如下所示：
 
 .. tabs::
 
@@ -61,8 +61,8 @@ You will need to run this command on every new shell you open to have access to 
         $ source /opt/ros/{DISTRO}/setup.bash
 
 
-      Replace ``.bash`` with your shell if you're not using bash.
-      Possible values are: ``setup.bash``, ``setup.sh``, ``setup.zsh``.
+      如果您不使用 bash，请将 ``.bash`` 替换为您的 shell。
+      可能的值有：``setup.bash``、``setup.sh``、``setup.zsh``。
 
    .. group-tab:: macOS
 
@@ -77,13 +77,13 @@ You will need to run this command on every new shell you open to have access to 
         $ call C:\dev\ros2\local_setup.bat
 
 .. note::
-    The exact command depends on where you installed ROS 2.
-    If you're having problems, ensure the file path leads to your installation.
+    具体命令取决于您安装 ROS 2 的位置。
+    如果遇到问题，请确保文件路径指向您的安装位置。
 
-2 Add sourcing to your shell startup script
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2 将 source 命令添加到 shell 启动脚本
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you don't want to have to source the setup file every time you open a new shell (skipping task 1), then you can add the command to your shell startup script:
+如果您不想每次打开新 shell 时都 source 设置文件（跳过任务 1），可以将命令添加到 shell 启动脚本中：
 
 .. tabs::
 
@@ -93,7 +93,7 @@ If you don't want to have to source the setup file every time you open a new she
 
         $ echo "source /opt/ros/{DISTRO}/setup.bash" >> ~/.bashrc
 
-      To undo this, locate your system's shell startup script and remove the appended source command.
+      要撤销此操作，请找到系统的 shell 启动脚本并删除追加的 source 命令。
 
    .. group-tab:: macOS
 
@@ -101,32 +101,32 @@ If you don't want to have to source the setup file every time you open a new she
 
         $ echo "source ~/ros2_install/ros2-osx/setup.bash" >> ~/.bash_profile
 
-      To undo this, locate your system's shell startup script and remove the appended source command.
+      要撤销此操作，请找到系统的 shell 启动脚本并删除追加的 source 命令。
 
    .. group-tab:: Windows
 
-      Only for PowerShell users, create a folder in 'My Documents' called 'WindowsPowerShell'.
-      Within 'WindowsPowerShell', create file 'Microsoft.PowerShell_profile.ps1'.
-      Inside the file, paste:
+      仅适用于 PowerShell 用户，在"我的文档"中创建一个名为"WindowsPowerShell"的文件夹。
+      在"WindowsPowerShell"中，创建文件"Microsoft.PowerShell_profile.ps1"。
+      在文件中粘贴：
 
       .. code-block:: console
 
         $ C:\dev\ros2_{DISTRO}\local_setup.ps1
 
-      PowerShell will request permission to run this script every time a new shell is opened.
-      To avoid that issue you can run:
+      PowerShell 每次打开新 shell 时都会请求运行此脚本的权限。
+      要避免此问题，您可以运行：
 
       .. code-block:: console
 
         $ Unblock-File C:\dev\ros2_{DISTRO}\local_setup.ps1
 
-      To undo this, remove the new 'Microsoft.PowerShell_profile.ps1' file.
+      要撤销此操作，请删除新的"Microsoft.PowerShell_profile.ps1"文件。
 
-3 Check environment variables
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 检查环境变量
+^^^^^^^^^^^^^^
 
-Sourcing ROS 2 setup files will set several environment variables necessary for operating ROS 2.
-If you ever have problems finding or using your ROS 2 packages, make sure that your environment is properly set up using the following command:
+Source ROS 2 设置文件将设置运行 ROS 2 所需的多个环境变量。
+如果您在查找或使用 ROS 2 软件包时遇到问题，请确保使用以下命令正确设置了环境：
 
 .. tabs::
 
@@ -148,7 +148,7 @@ If you ever have problems finding or using your ROS 2 packages, make sure that y
 
         $ set | findstr -i ROS
 
-Check that variables like ``ROS_DISTRO`` and ``ROS_VERSION`` are set.
+检查 ``ROS_DISTRO`` 和 ``ROS_VERSION`` 等变量是否已设置。
 
 ::
 
@@ -156,15 +156,15 @@ Check that variables like ``ROS_DISTRO`` and ``ROS_VERSION`` are set.
   ROS_PYTHON_VERSION=3
   ROS_DISTRO={DISTRO}
 
-If the environment variables are not set correctly, return to the ROS 2 package installation section of the installation guide you followed.
-If you need more specific help (because environment setup files can come from different places), you can `get answers <https://robotics.stackexchange.com/>`__ from the community.
+如果环境变量设置不正确，请返回您遵循的安装指南中的 ROS 2 软件包安装部分。
+如果您需要更具体的帮助（因为环境设置文件可能来自不同的地方），您可以从社区`获取答案 <https://robotics.stackexchange.com/>`__。
 
-3.1 The ``ROS_DOMAIN_ID`` variable
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3.1 ``ROS_DOMAIN_ID`` 变量
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-See the `domain ID <../../Concepts/Intermediate/About-Domain-ID>` article for details on ROS domain IDs.
+有关 ROS 域 ID 的详细信息，请参阅 `域 ID <../../Concepts/Intermediate/About-Domain-ID>` 文章。
 
-Once you have determined a unique integer for your group of ROS 2 nodes, you can set the environment variable with the following command:
+确定 ROS 2 节点组的唯一整数后，可以使用以下命令设置环境变量：
 
 .. tabs::
 
@@ -174,7 +174,7 @@ Once you have determined a unique integer for your group of ROS 2 nodes, you can
 
         $ export ROS_DOMAIN_ID=<your_domain_id>
 
-      To maintain this setting between shell sessions, you can add the command to your shell startup script:
+      要在 shell 会话之间保持此设置，可以将命令添加到 shell 启动脚本中：
 
       .. code-block:: console
 
@@ -186,7 +186,7 @@ Once you have determined a unique integer for your group of ROS 2 nodes, you can
 
         $ export ROS_DOMAIN_ID=<your_domain_id>
 
-      To maintain this setting between shell sessions, you can add the command to your shell startup script:
+      要在 shell 会话之间保持此设置，可以将命令添加到 shell 启动脚本中：
 
       .. code-block:: console
 
@@ -198,29 +198,29 @@ Once you have determined a unique integer for your group of ROS 2 nodes, you can
 
         $ set ROS_DOMAIN_ID=<your_domain_id>
 
-      If you want to make this permanent between shell sessions, also run:
+      如果您想在 shell 会话之间使其永久生效，还可以运行：
 
       .. code-block:: console
 
         $ setx ROS_DOMAIN_ID <your_domain_id>
 
-3.2 The ``ROS_AUTOMATIC_DISCOVERY_RANGE`` variable
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3.2 ``ROS_AUTOMATIC_DISCOVERY_RANGE`` 变量
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By default, ROS 2 communication is not limited to localhost.
-``ROS_AUTOMATIC_DISCOVERY_RANGE`` environment variable allows you to limit ROS 2 discovery range.
-Using ``ROS_AUTOMATIC_DISCOVERY_RANGE`` is helpful in certain settings, such as classrooms, where multiple robots may publish to the same topic causing strange behaviors.
-See :ref:`Improved Dynamic Discovery <ImprovedDynamicDiscovery>` for more details.
+默认情况下，ROS 2 通信不限于本地主机。
+``ROS_AUTOMATIC_DISCOVERY_RANGE`` 环境变量允许您限制 ROS 2 发现范围。
+使用 ``ROS_AUTOMATIC_DISCOVERY_RANGE`` 在某些情况下很有帮助，例如在教室中，多个机器人可能发布到同一主题，导致异常行为。
+有关更多详细信息，请参阅 :ref:`改进的动态发现 <ImprovedDynamicDiscovery>`。
 
-Summary
--------
+总结
+----
 
-The ROS 2 development environment needs to be correctly configured before use.
-This can be done in two ways: either sourcing the setup files in every new shell you open, or adding the source command to your startup script.
+ROS 2 开发环境在使用前需要正确配置。
+这可以通过两种方式完成：在打开的每个新 shell 中 source 设置文件，或将 source 命令添加到启动脚本中。
 
-If you ever face any problems locating or using packages with ROS 2, the first thing you should do is check your environment variables and ensure they are set to the version and distro you intended.
+如果您在使用 ROS 2 定位或使用软件包时遇到任何问题，首先应该检查环境变量，并确保它们设置为您预期的版本和发行版。
 
-Next steps
-----------
+下一步
+------
 
-Now that you have a working ROS 2 installation and you know how to source its setup files, you can start learning the ins and outs of ROS 2 with the :doc:`turtlesim tool <./Introducing-Turtlesim/Introducing-Turtlesim>`.
+现在您已经有了一个可用的 ROS 2 安装，并且知道如何 source 其设置文件，您可以开始使用 :doc:`turtlesim 工具 <./Introducing-Turtlesim/Introducing-Turtlesim>` 学习 ROS 2 的方方面面。

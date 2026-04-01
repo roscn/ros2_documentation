@@ -7,50 +7,402 @@
 Creating a workspace
 ====================
 
-**Goal:** Create a workspace and learn how to set up an overlay for development and testing.
+**目标：** 创建一个工作空间并学习如何为开发和测试设置覆盖层。
 
-**Tutorial level:** Beginner
+**教程级别：** 初级
 
-**Time:** 20 minutes
+**时间：** 20 分钟
 
-.. contents:: Contents
+.. contents:: 目录
    :depth: 2
    :local:
 
-Background
-----------
+背景
+----
 
-A workspace is a directory containing ROS 2 packages.
-Before using ROS 2, it's necessary to source your ROS 2 installation workspace in the terminal you plan to work in.
-This makes ROS 2's packages available for you to use in that terminal.
+工作空间是一个包含 ROS 2 包的目录。
+在使用 ROS 2 之前，有必要在您计划工作的终端中 source 您的 ROS 2 安装工作空间。
+这使 ROS 2 的包可供您在该终端中使用。
 
-You also have the option of sourcing an "overlay" - a secondary workspace where you can add new packages without interfering with the existing ROS 2 workspace that you're extending, or "underlay".
-Your underlay must contain the dependencies of all the packages in your overlay.
-Packages in your overlay will override packages in the underlay.
-It's also possible to have several layers of underlays and overlays, with each successive overlay using the packages of its parent underlays.
+您还可以选择 source 一个"覆盖层"——一个次要工作空间，您可以在其中添加新包，而不会干扰您正在扩展的现有 ROS 2 工作空间或"底层"。
+您的底层必须包含覆盖层中所有包的依赖项。
+覆盖层中的包将覆盖底层中的包。
+也可以有多层底层和覆盖层，每个后续覆盖层使用其父底层的包。
 
 
-Prerequisites
--------------
+前提条件
+---------
 
-* :doc:`ROS 2 installation <../../../Installation>`
-* :doc:`colcon installation <../Colcon-Tutorial>`
-* `git installation <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`__
-* :doc:`turtlesim installation <../../Beginner-CLI-Tools/Introducing-Turtlesim/Introducing-Turtlesim>`
-* Have :doc:`rosdep installed <../../Intermediate/Rosdep>`
-* Understanding of basic terminal commands (`here's a guide for Linux <https://www2.cs.sfu.ca/~ggbaker/reference/unix/>`__)
-* Text editor of your choice
+* :doc:`ROS 2 安装 <../../../Installation>`
+* :doc:`colcon 安装 <../Colcon-Tutorial>`
+* `git 安装 <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`__
+* :doc:`turtlesim 安装 <../../Beginner-CLI-Tools/Introducing-Turtlesim/Introducing-Turtlesim>`
+* 已安装 :doc:`rosdep <../../Intermediate/Rosdep>`
+* 了解基本终端命令（`这里是 Linux 指南 <https://www2.cs.sfu.ca/~ggbaker/reference/unix/>`__）
+* 您选择的文本编辑器
 
-Tasks
------
+任务
+----
 
-1 Source ROS 2 environment
+1 Source ROS 2 环境
+^^^^^^^^^^^^^^^^^^^
+
+您的主 ROS 2 安装将作为本教程的底层。
+（请记住，底层不一定是主 ROS 2 安装。）
+
+根据您安装 ROS 2 的方式（从源代码或二进制文件）以及您使用的平台，您的确切 source 命令会有所不同：
+
+.. tabs::
+
+   .. group-tab:: Linux
+
+      .. code-block:: console
+
+        $ source /opt/ros/{DISTRO}/setup.bash
+
+   .. group-tab:: macOS
+
+      .. code-block:: console
+
+        $ . ~/ros2_install/ros2-osx/setup.bash
+
+   .. group-tab:: Windows
+
+      请记住使用 ``x64 Native Tools Command Prompt for VS 2019`` 来执行以下命令，因为我们要构建一个工作空间。
+
+      .. code-block:: console
+
+        $ call C:\dev\ros2\local_setup.bat
+
+如果这些命令对您不起作用，请查阅您遵循的 :doc:`安装指南 <../../../Installation>`。
+
+.. _new-directory:
+
+2 创建新目录
+^^^^^^^^^^^^
+
+最佳实践是为每个新工作空间创建一个新目录。
+名称并不重要，但让它指示工作空间的用途会很有帮助。
+让我们选择目录名称 ``ros2_ws``，表示"开发工作空间"：
+
+.. tabs::
+
+   .. group-tab:: Linux
+
+      .. code-block:: console
+
+        $ mkdir -p ~/ros2_ws/src
+        $ cd ~/ros2_ws/src
+
+   .. group-tab:: macOS
+
+      .. code-block:: console
+
+        $ mkdir -p ~/ros2_ws/src
+        $ cd ~/ros2_ws/src
+
+   .. group-tab:: Windows
+
+     .. code-block:: console
+
+       $ md \ros2_ws\src
+       $ cd \ros2_ws\src
+
+
+另一个最佳实践是将工作空间中的任何包放入 ``src`` 目录中。
+上面的代码在 ``ros2_ws`` 内部创建了一个 ``src`` 目录，然后导航到其中。
+
+
+3 克隆示例仓库
+^^^^^^^^^^^^^^
+
+在克隆之前，请确保您仍在 ``ros2_ws/src`` 目录中。
+
+在其余的初级开发者教程中，您将创建自己的包，但现在您将练习使用现有包组合工作空间。
+
+如果您完成了 :doc:`初级：CLI 工具 <../../Beginner-CLI-Tools>` 教程，您将熟悉 ``turtlesim``，它是 `ros_tutorials <https://github.com/ros/ros_tutorials/>`__ 中的包之一。
+
+一个仓库可以有多个分支。
+您需要检出针对您安装的 ROS 2 发行版的分支。
+克隆此仓库时，添加 ``-b`` 参数，后跟该分支。
+
+在 ``ros2_ws/src`` 目录中，运行以下命令：
+
+.. code-block:: console
+
+  $ git clone https://github.com/ros/ros_tutorials.git -b {DISTRO}
+
+现在 ``ros_tutorials`` 已克隆到您的工作空间中。
+``ros_tutorials`` 仓库包含 ``turtlesim`` 包，我们将在本教程的其余部分使用它。
+此仓库中的其他包未构建，因为它们包含 ``COLCON_IGNORE`` 文件。
+
+到目前为止，您已经用示例包填充了工作空间，但它还不是一个功能完整的工作空间。
+您需要先解决依赖关系，然后构建工作空间。
+
+
+4 解决依赖关系
+^^^^^^^^^^^^^^
+
+在构建工作空间之前，您需要解决包依赖关系。
+您可能已经拥有所有依赖项，但最佳实践是每次克隆时都检查依赖关系。
+您不希望在长时间等待后构建失败，才发现缺少依赖项。
+
+从工作空间的根目录（``ros2_ws``），运行以下命令：
+
+.. tabs::
+
+   .. group-tab:: Linux
+
+      如果您仍在包含 ``ros_tutorials`` 克隆的 ``src`` 目录中，请确保运行 ``cd ..`` 返回到工作空间（``ros2_ws``）。
+
+      .. code-block:: console
+
+        $ cd ..
+        $ rosdep install -i --from-path src --rosdistro {DISTRO} -y
+
+   .. group-tab:: macOS
+
+      rosdep 仅在 Linux 上运行，因此您可以跳到"5 使用 colcon 构建工作空间"部分。
+
+   .. group-tab:: Windows
+
+      rosdep 仅在 Linux 上运行，因此您可以跳到"5 使用 colcon 构建工作空间"部分。
+
+如果您在 Linux 上从源代码或二进制存档安装 ROS 2，则需要使用其安装说明中的 rosdep 命令。
+这里是 :ref:`从源代码安装的 rosdep 部分 <linux-development-setup-install-dependencies-using-rosdep>` 和 :ref:`二进制存档的 rosdep 部分 <linux-install-binary-install-missing-dependencies>`。
+
+如果您已经拥有所有依赖项，控制台将返回：
+
+.. code-block:: text
+
+  #All required rosdeps installed successfully
+
+包在 package.xml 文件中声明其依赖项（您将在下一个教程中了解更多关于包的信息）。
+此命令遍历这些声明并安装缺少的依赖项。
+您可以在另一个教程中了解更多关于 ``rosdep`` 的信息（即将推出）。
+
+5 使用 colcon 构建工作空间
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Your main ROS 2 installation will be your underlay for this tutorial.
-(Keep in mind that an underlay does not necessarily have to be the main ROS 2 installation.)
+从工作空间的根目录（``ros2_ws``），您现在可以使用以下命令构建包：
 
-Depending on how you installed ROS 2 (from source or binaries), and which platform you're on, your exact source command will vary:
+.. tabs::
+
+  .. group-tab:: Linux
+
+    .. code-block:: console
+
+      $ colcon build
+      Starting >>> turtlesim
+      Finished <<< turtlesim [5.49s]
+
+      Summary: 1 package finished [5.58s]
+
+
+  .. group-tab:: macOS
+
+    .. code-block:: console
+
+      $ colcon build
+      Starting >>> turtlesim
+      Finished <<< turtlesim [5.49s]
+
+      Summary: 1 package finished [5.58s]
+
+
+  .. group-tab:: Windows
+
+    .. code-block:: console
+
+      $ colcon build --merge-install
+      Starting >>> turtlesim
+      Finished <<< turtlesim [5.49s]
+
+      Summary: 1 package finished [5.58s]
+
+    Windows 不允许长路径，因此 ``merge-install`` 会将所有路径合并到 ``install`` 目录中。
+
+.. note::
+
+  ``colcon build`` 的其他有用参数：
+
+  * ``--packages-up-to`` 构建您想要的包及其所有依赖项，但不构建整个工作空间（节省时间）
+  * ``--symlink-install`` 使您不必在每次调整 Python 脚本时重新构建
+  * ``--event-handlers console_direct+`` 在构建时显示控制台输出（否则可以在 ``log`` 目录中找到）
+  * ``--executor sequential`` 逐个处理包而不是使用并行处理
+
+构建完成后，在工作空间根目录（``~/ros2_ws``）中输入命令。
+您将看到 colcon 创建了新目录：
+
+.. tabs::
+
+   .. group-tab:: Linux
+
+      .. code-block:: console
+
+        $ ls
+        build  install  log  src
+
+   .. group-tab:: macOS
+
+      .. code-block:: console
+
+        $ ls
+        build  install  log  src
+
+   .. group-tab:: Windows
+
+      .. code-block:: console
+
+        $ dir
+        build  install  log  src
+
+``install`` 目录是工作空间 setup 文件所在的位置，您可以使用它来 source 您的覆盖层。
+
+
+6 Source 覆盖层
+^^^^^^^^^^^^^^^
+
+在 source 覆盖层之前，非常重要的一点是打开一个新终端，与您构建工作空间的终端分开。
+在构建工作空间的同一终端中 source 覆盖层，或同样在 source 覆盖层的地方构建，可能会产生复杂的问题。
+
+在新终端中，将您的主 ROS 2 环境 source 为"底层"，这样您就可以在其上构建覆盖层：
+
+.. tabs::
+
+   .. group-tab:: Linux
+
+      .. code-block:: console
+
+        $ source /opt/ros/{DISTRO}/setup.bash
+
+   .. group-tab:: macOS
+
+      .. code-block:: console
+
+        $ . ~/ros2_install/ros2-osx/setup.bash
+
+   .. group-tab:: Windows
+
+      在这种情况下，您可以使用普通的命令提示符，因为我们不会在此终端中构建任何工作空间。
+
+      .. code-block:: console
+
+        $ call C:\dev\ros2\local_setup.bat
+
+进入工作空间的根目录：
+
+.. tabs::
+
+   .. group-tab:: Linux
+
+      .. code-block:: console
+
+        $ cd ~/ros2_ws
+
+   .. group-tab:: macOS
+
+      .. code-block:: console
+
+        $ cd ~/ros2_ws
+
+   .. group-tab:: Windows
+
+     .. code-block:: console
+
+       $ cd \ros2_ws
+
+在根目录中，source 您的覆盖层：
+
+.. tabs::
+
+  .. group-tab:: Linux
+
+    .. code-block:: console
+
+      $ source install/local_setup.bash
+
+  .. group-tab:: macOS
+
+    .. code-block:: console
+
+      $ . install/local_setup.bash
+
+  .. group-tab:: Windows
+
+    .. code-block:: console
+
+      $ call install\setup.bat
+
+.. note::
+
+  Source 覆盖层的 ``local_setup`` 只会将覆盖层中可用的包添加到您的环境中。
+  ``setup`` 会 source 覆盖层以及创建它的底层，允许您利用两个工作空间。
+
+  因此，先 source 主 ROS 2 安装的 ``setup``，然后 source ``ros2_ws`` 覆盖层的 ``local_setup``，就像您刚才做的那样，
+  与只 source ``ros2_ws`` 的 ``setup`` 是一样的，因为它包含了其底层的环境。
+
+现在您可以从覆盖层运行 ``turtlesim`` 包：
+
+.. code-block:: console
+
+  $ ros2 run turtlesim turtlesim_node
+
+但是，您如何判断这是覆盖层的 turtlesim 在运行，而不是主安装的 turtlesim？
+
+让我们修改覆盖层中的 turtlesim，这样您就可以看到效果：
+
+* 您可以单独于底层在覆盖层中修改和重新构建包。
+* 覆盖层优先于底层。
+
+
+7 修改覆盖层
+^^^^^^^^^^^^
+
+您可以通过编辑 turtlesim 窗口上的标题栏来修改覆盖层中的 ``turtlesim``。
+为此，在 ``~/ros2_ws/src/ros_tutorials/turtlesim/src`` 中找到 ``turtle_frame.cpp`` 文件。
+使用您喜欢的文本编辑器打开 ``turtle_frame.cpp``。
+
+找到函数 ``setWindowTitle("TurtleSim");``，将值 ``"TurtleSim"`` 更改为 ``"MyTurtleSim"``,并保存文件。
+
+返回到您之前运行 ``colcon build`` 的第一个终端，然后再次运行它。
+
+返回到第二个终端（已 source 覆盖层）并再次运行 turtlesim：
+
+.. code-block:: console
+
+  $ ros2 run turtlesim turtlesim_node
+
+您将看到 turtlesim 窗口上的标题栏现在显示"MyTurtleSim"。
+
+.. image:: images/overlay.png
+
+尽管您之前在此终端中 source 了主 ROS 2 环境，但 ``ros2_ws`` 环境的覆盖层优先于底层的内容。
+
+要查看您的底层是否仍然完好，请打开一个全新的终端并仅 source 您的 ROS 2 安装。
+再次运行 turtlesim：
+
+.. code-block:: console
+
+  $ ros2 run turtlesim turtlesim_node
+
+.. image:: images/underlay.png
+
+您可以看到覆盖层中的修改实际上并没有影响底层中的任何内容。
+
+
+总结
+----
+
+在本教程中，您将主 ROS 2 发行版安装 source 为底层，并通过在新工作空间中克隆和构建包来创建覆盖层。
+覆盖层被前置到路径中，并优先于底层，正如您在修改 turtlesim 时所看到的那样。
+
+建议使用覆盖层来处理少量包，这样您就不必将所有内容放在同一个工作空间中，也不必在每次迭代时重新构建庞大的工作空间。
+
+下一步
+------
+
+现在您已经了解了创建、构建和 source 自己工作空间的详细信息，您可以学习如何 :doc:`创建自己的包 <../Creating-Your-First-ROS2-Package>`。
 
 .. tabs::
 

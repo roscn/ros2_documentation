@@ -4,102 +4,102 @@
 
 .. _ROS2Launch:
 
-Launching nodes
-===============
+启动节点
+========
 
-**Goal:** Use a command line tool to launch multiple nodes at once.
+**目标：** 使用命令行工具一次性启动多个节点。
 
-**Tutorial Level:** Beginner
+**教程级别：** 初级
 
-**Time:** 5 minutes
+**时间：** 5 分钟
 
-.. contents:: Contents
+.. contents:: 目录
    :depth: 2
    :local:
 
-Background
-----------
+背景
+----
 
-In most of the introductory tutorials, you have been opening new terminals for every new node you run.
-As you create more complex systems with more and more nodes running simultaneously, opening terminals and reentering configuration details becomes tedious.
+在大多数入门教程中，您一直为每个新节点打开新的终端。
+随着您创建更复杂的系统，同时运行越来越多的节点，打开终端和重新输入配置细节变得乏味。
 
-Launch files allow you to start up and configure a number of executables containing ROS 2 nodes simultaneously.
+启动文件允许您同时启动和配置多个包含 ROS 2 节点的可执行文件。
 
-Running a single launch file with the ``ros2 launch`` command will start up your entire system - all nodes and their configurations - at once.
+使用 ``ros2 launch`` 命令运行单个启动文件将一次性启动您的整个系统——所有节点及其配置。
 
-Prerequisites
--------------
+前提条件
+---------
 
-Before starting these tutorials, install ROS 2 by following the instructions on the ROS 2 :doc:`../../../Installation/` page.
+在开始这些教程之前，请按照 ROS 2 :doc:`../../../Installation/` 页面上的说明安装 ROS 2。
 
-The commands used in this tutorial assume you followed the binary packages installation guide for your operating system (deb packages for Linux).
-You can still follow along if you built from source, but the path to your setup files will likely be different.
-You also won't be able to use the ``sudo apt install ros-<distro>-<package>`` command (used frequently in the beginner level tutorials) if you install from source.
+本教程中使用的命令假设您遵循了操作系统的二进制包安装指南（Linux 的 deb 包）。
+如果您从源代码构建，您仍然可以继续，但设置文件的路径可能会有所不同。
+如果您从源代码安装，您也无法使用 ``sudo apt install ros-<distro>-<package>`` 命令（在初级教程中经常使用）。
 
-If you are using Linux and are not already familiar with the shell, `this tutorial <https://www.linux.com/training-tutorials/bash-101-working-cli/>`__ will help.
+如果您使用 Linux 并且还不熟悉 shell，`这个教程 <https://www.linux.com/training-tutorials/bash-101-working-cli/>`__ 会对您有所帮助。
 
-As always, don't forget to source ROS 2 in :doc:`every new terminal you open <../Configuring-ROS2-Environment>`.
+一如既往，不要忘记在 :doc:`打开的每个新终端 <../Configuring-ROS2-Environment>` 中 source ROS 2。
 
-Tasks
------
+任务
+----
 
-Running a Launch File
-^^^^^^^^^^^^^^^^^^^^^
+运行启动文件
+^^^^^^^^^^^^
 
-Open a new terminal and run:
+打开一个新终端并运行：
 
 .. code-block:: console
 
    $ ros2 launch turtlesim multisim.launch.py
 
-This command will run the following launch file:
+此命令将运行以下启动文件：
 
 .. literalinclude:: launch/multisim.launch.py
    :language: python
 
 .. note::
 
-  The launch file above is written in Python, but you can also use XML and YAML to create launch files.
-  You can see a comparison of these different ROS 2 launch formats in :doc:`../../../How-To-Guides/Launch-file-different-formats`.
+  上面的启动文件是用 Python 编写的，但您也可以使用 XML 和 YAML 创建启动文件。
+  您可以在 :doc:`../../../How-To-Guides/Launch-file-different-formats` 中看到这些不同 ROS 2 启动格式的比较。
 
-This will run two turtlesim nodes:
+这将运行两个 turtlesim 节点：
 
 .. image:: images/turtlesim_multisim.png
 
-For now, don't worry about the contents of this launch file.
-You can find more information on ROS 2 launch in the :doc:`ROS 2 launch tutorials <../../Intermediate/Launch/Launch-Main>`.
+暂时不用担心这个启动文件的内容。
+您可以在 :doc:`ROS 2 启动教程 <../../Intermediate/Launch/Launch-Main>` 中找到更多关于 ROS 2 启动的信息。
 
-(Optional) Control the Turtlesim Nodes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+（可选）控制 Turtlesim 节点
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Now that these nodes are running, you can control them like any other ROS 2 nodes.
-For example, you can make the turtles drive in opposite directions by opening up two additional terminals and running the following commands:
+现在这些节点正在运行，您可以像控制任何其他 ROS 2 节点一样控制它们。
+例如，您可以通过打开两个额外的终端并运行以下命令让海龟朝相反的方向移动：
 
-In the second terminal:
+在第二个终端中：
 
 .. code-block:: console
 
    $ ros2 topic pub  /turtlesim1/turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}"
 
-In the third terminal:
+在第三个终端中：
 
 .. code-block:: console
 
    $ ros2 topic pub  /turtlesim2/turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -1.8}}"
 
-After running these commands, you should see something like the following:
+运行这些命令后，您应该会看到类似以下的内容：
 
 .. image:: images/turtlesim_multisim_spin.png
 
-Summary
--------
+总结
+----
 
-The significance of what you've done so far is that you've run two turtlesim nodes with one command.
-Once you learn to write your own launch files, you'll be able to run multiple nodes - and set up their configuration - in a similar way, with the ``ros2 launch`` command.
+到目前为止，您所做的重要之处在于使用一个命令运行了两个 turtlesim 节点。
+一旦您学会编写自己的启动文件，您将能够使用 ``ros2 launch`` 命令以类似的方式运行多个节点——并设置它们的配置。
 
-For more tutorials on ROS 2 launch files, see the :doc:`main launch file tutorial page<../../Intermediate/Launch/Launch-Main>`.
+有关 ROS 2 启动文件的更多教程，请参阅 :doc:`主启动文件教程页面<../../Intermediate/Launch/Launch-Main>`。
 
-Next steps
-----------
+下一步
+------
 
-In the next tutorial, :doc:`../Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data`, you'll learn about another helpful tool, ``ros2 bag``.
+在下一篇教程中，:doc:`../Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data`，您将了解另一个有用的工具 ``ros2 bag``。

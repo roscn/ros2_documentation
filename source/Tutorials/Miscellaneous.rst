@@ -1,5 +1,5 @@
-Miscellaneous
-=============
+其他教程
+========
 
 .. toctree::
    :maxdepth: 1

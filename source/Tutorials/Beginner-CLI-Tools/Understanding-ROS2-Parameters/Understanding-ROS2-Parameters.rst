@@ -4,50 +4,50 @@
 
 .. _ROS2Params:
 
-Understanding parameters
-========================
+理解参数
+=========
 
-**Goal:** Learn how to get, set, save and reload parameters in ROS 2.
+**目标：** 学习如何在 ROS 2 中获取、设置、保存和重新加载参数。
 
-**Tutorial level:** Beginner
+**教程级别：** 初级
 
-**Time:** 5 minutes
+**时间：** 5 分钟
 
-.. contents:: Contents
+.. contents:: 目录
    :depth: 2
    :local:
 
-Background
-----------
+背景
+----
 
-A parameter is a configuration value of a node.
-You can think of parameters as node settings.
-A node can store parameters as integers, floats, booleans, strings, and lists.
-In ROS 2, each node maintains its own parameters.
-For more background on parameters, please see :doc:`the concept document <../../../Concepts/Basic/About-Parameters>`.
+参数是节点的配置值。
+您可以将参数视为节点设置。
+节点可以将参数存储为整数、浮点数、布尔值、字符串和列表。
+在 ROS 2 中，每个节点维护自己的参数。
+有关参数的更多背景信息，请参阅 :doc:`概念文档 <../../../Concepts/Basic/About-Parameters>`。
 
-Prerequisites
--------------
+前提条件
+---------
 
-This tutorial uses the :doc:`turtlesim package <../Introducing-Turtlesim/Introducing-Turtlesim>`.
+本教程使用 :doc:`turtlesim 软件包 <../Introducing-Turtlesim/Introducing-Turtlesim>`。
 
-As always, don't forget to source ROS 2 in :doc:`every new terminal you open <../Configuring-ROS2-Environment>`.
+一如既往，不要忘记在 :doc:`打开的每个新终端 <../Configuring-ROS2-Environment>` 中 source ROS 2。
 
-Tasks
------
+任务
+----
 
-1 Setup
-^^^^^^^
+1 设置
+^^^^^^
 
-Start up the two turtlesim nodes, ``/turtlesim`` and ``/teleop_turtle``.
+启动两个 turtlesim 节点，``/turtlesim`` 和 ``/teleop_turtle``。
 
-Open a new terminal and run:
+打开一个新终端并运行：
 
 .. code-block:: console
 
     $ ros2 run turtlesim turtlesim_node
 
-Open another terminal and run:
+打开另一个终端并运行：
 
 .. code-block:: console
 
@@ -57,7 +57,7 @@ Open another terminal and run:
 2 ros2 param list
 ^^^^^^^^^^^^^^^^^
 
-To see the parameters belonging to your nodes, open a new terminal and enter the command:
+要查看属于您节点的参数，打开一个新终端并输入命令：
 
 .. code-block:: console
 
@@ -81,92 +81,92 @@ To see the parameters belonging to your nodes, open a new terminal and enter the
     use_sim_time
 
 
-You see the node namespaces, ``/teleop_turtle`` and ``/turtlesim``, followed by each node's parameters.
+您可以看到节点命名空间 ``/teleop_turtle`` 和 ``/turtlesim``，后面是每个节点的参数。
 
-The namespaces of the parameter and its name are separated using dots as you can see, for example, in ``parameter_events.publisher.depth``.
+参数的命名空间和其名称使用点分隔，例如 ``parameter_events.publisher.depth``。
 
-Every node has the parameter ``use_sim_time``; it's not unique to turtlesim.
+每个节点都有 ``use_sim_time`` 参数；它不是 turtlesim 特有的。
 
-Based on their names, it looks like ``/turtlesim``'s parameters determine the background color of the turtlesim window using RGB color values.
+根据它们的名称，``/turtlesim`` 的参数似乎使用 RGB 颜色值决定 turtlesim 窗口的背景颜色。
 
-To determine a parameter's type, you can use ``ros2 param get``.
+要确定参数的类型，您可以使用 ``ros2 param get``。
 
 
 3 ros2 param get
 ^^^^^^^^^^^^^^^^
 
-To display the type and current value of a parameter, use the command:
+要显示参数的类型和当前值，请使用命令：
 
 .. code-block:: console
 
   $ ros2 param get <node_name> <parameter_name>
 
-You can also query a parameter across all nodes by omitting the node name:
+您也可以通过省略节点名称来查询所有节点中的参数：
 
 .. code-block:: console
 
   $ ros2 param get <parameter_name>
 
-Let's find out the current value of ``/turtlesim``'s parameter ``background_g``:
+让我们找出 ``/turtlesim`` 参数 ``background_g`` 的当前值：
 
 .. code-block:: console
 
   $ ros2 param get /turtlesim background_g
   Integer value is: 86
 
-Now you know ``background_g`` holds an integer value.
+现在您知道 ``background_g`` 保存一个整数值。
 
-If you run the same command on ``background_r`` and ``background_b``, you will get the values ``69`` and ``255``, respectively.
+如果您在 ``background_r`` 和 ``background_b`` 上运行相同的命令，您将分别获得值 ``69`` 和 ``255``。
 
-You can also check the ``use_sim_time`` parameter across all nodes:
+您也可以检查所有节点中的 ``use_sim_time`` 参数：
 
 .. code-block:: console
 
   $ ros2 param get use_sim_time
 
-This will display the parameter value for each node that has this parameter set.
+这将显示设置了此参数的每个节点的参数值。
 
 4 ros2 param set
 ^^^^^^^^^^^^^^^^
 
-To change a parameter's value at runtime, use the command:
+要在运行时更改参数的值，请使用命令：
 
 .. code-block:: console
 
   $ ros2 param set <node_name> <parameter_name> <value>
 
-Let's change ``/turtlesim``'s background color:
+让我们更改 ``/turtlesim`` 的背景颜色：
 
 .. code-block:: console
 
   $ ros2 param set /turtlesim background_r 150
   Set parameter successful
 
-The background of your turtlesim window should change colors:
+您的 turtlesim 窗口的背景应该会改变颜色：
 
 .. image:: images/set.png
 
-Setting parameters with the ``set`` command will only change them in your current session, not permanently.
-However, you can save your settings and reload them the next time you start a node.
+使用 ``set`` 命令设置参数只会更改当前会话中的参数，而不是永久更改。
+但是，您可以保存设置并在下次启动节点时重新加载它们。
 
 5 ros2 param dump
 ^^^^^^^^^^^^^^^^^
 
-You can view all of a node's current parameter values by using the command:
+您可以使用以下命令查看节点所有当前参数值：
 
 .. code-block:: console
 
   $ ros2 param dump <node_name>
 
-The command prints to the standard output (stdout) by default but you can also redirect the parameter values into a file to save them for later.
-To save your current configuration of ``/turtlesim``'s parameters into the file ``turtlesim.yaml``, enter the command:
+该命令默认打印到标准输出（stdout），但您也可以将参数值重定向到文件中以保存以备后用。
+要将 ``/turtlesim`` 参数的当前配置保存到文件 ``turtlesim.yaml`` 中，输入命令：
 
 .. code-block:: console
 
   $ ros2 param dump /turtlesim > turtlesim.yaml
 
-You will find a new file in the current working directory your shell is running in.
-If you open this file, you'll see the following content:
+您将在 shell 运行的当前工作目录中找到一个新文件。
+如果您打开此文件，您将看到以下内容：
 
 .. code-block:: YAML
 
@@ -184,18 +184,18 @@ If you open this file, you'll see the following content:
             reliability: reliable
       use_sim_time: false
 
-Dumping parameters comes in handy if you want to reload the node with the same parameters in the future.
+如果您将来想用相同的参数重新加载节点，转储参数会很方便。
 
 6 ros2 param load
 ^^^^^^^^^^^^^^^^^
 
-You can load parameters from a file to a currently running node using the command:
+您可以使用以下命令从文件向当前运行的节点加载参数：
 
 .. code-block:: console
 
   $ ros2 param load <node_name> <parameter_file>
 
-To load the ``turtlesim.yaml`` file generated with ``ros2 param dump`` into ``/turtlesim`` node's parameters, enter the command:
+要将使用 ``ros2 param dump`` 生成的 ``turtlesim.yaml`` 文件加载到 ``/turtlesim`` 节点的参数中，输入命令：
 
 .. code-block:: console
 
@@ -211,41 +211,41 @@ To load the ``turtlesim.yaml`` file generated with ``ros2 param dump`` into ``/t
 
 .. note::
 
-  Read-only parameters can only be modified at startup and not afterwards, that is why there are some warnings for the "qos_overrides" parameters.
+  只读参数只能在启动时修改，之后不能修改，这就是为什么"qos_overrides"参数有一些警告。
 
 .. _LoadParameterFileOnNodeStartup:
 
-7 Load parameter file on node startup
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 在节点启动时加载参数文件
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To start the same node using your saved parameter values, use:
+要使用保存的参数值启动相同的节点，请使用：
 
 .. code-block:: console
 
   $ ros2 run <package_name> <executable_name> --ros-args --params-file <file_name>
 
-This is the same command you always use to start turtlesim, with the added flags ``--ros-args`` and ``--params-file``, followed by the file you want to load.
+这与您用来启动 turtlesim 的命令相同，只是添加了标志 ``--ros-args`` 和 ``--params-file``，后跟您要加载的文件。
 
-Stop your running turtlesim node, and try reloading it with your saved parameters, using:
+停止您运行的 turtlesim 节点，并尝试使用保存的参数重新加载它，使用：
 
 .. code-block:: console
 
   $ ros2 run turtlesim turtlesim_node --ros-args --params-file turtlesim.yaml
 
-The turtlesim window should appear as usual, but with the purple background you set earlier.
+turtlesim 窗口应该照常出现，但具有您之前设置的紫色背景。
 
 .. note::
 
-  When a parameter file is used at node startup, all parameters, including the read-only ones, will be updated.
+  当在节点启动时使用参数文件时，所有参数，包括只读参数，都将被更新。
 
-Summary
--------
+总结
+----
 
-Nodes have parameters to define their default configuration values.
-You can ``get`` and ``set`` parameter values from the command line.
-You can also save the parameter settings to a file to reload them in a future session.
+节点具有参数来定义其默认配置值。
+您可以从命令行 ``get`` 和 ``set`` 参数值。
+您还可以将参数设置保存到文件中，以便在以后的会话中重新加载。
 
-Next steps
-----------
+下一步
+------
 
-Jumping back to ROS 2 communication methods, in the next tutorial you'll learn about :doc:`actions <../Understanding-ROS2-Actions/Understanding-ROS2-Actions>`.
+回到 ROS 2 通信方法，在下一篇教程中，您将学习 :doc:`动作 <../Understanding-ROS2-Actions/Understanding-ROS2-Actions>`。
